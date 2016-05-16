@@ -145,62 +145,6 @@ function imagesLoad(i,data){
 
 </script>
 </head>
-<%-- <body>
-<c:if test="${user.level==2||user.level==3 }">
-	<%@include file="/common/menu.jsp"%>
-</c:if>
-<c:if test="${user.level==1 }">
-	<%@include file="/common/menu2.jsp"%>
-</c:if>
-<%@include file="/common/menu2.jsp"%>
-<div class="breadBox">
-    	<ul>
-        	<li>· 您的位置：</li><li><a href="#">产品管理 </a></li><li>></li><li><a href="#">产品列表 </a></li>
-        </ul>
-        <div class="clear"></div>
-</div>
-<div class="contentBox">
-	<form action="" method="post">
-	<div class="toolBar">
-    	<font>产品列表 </font>
-    	<c:if test="${user.level==1}">
-    		<input class="btn" type="button" value="添加" onclick="javascript:add()"/>
-        	<input class="btn" type="button" value="删除" onclick="deleteProduct()"/>
-    	</c:if>
-    	
-    </div>
-    <table class="table" width="100%" cellpadding="0" cellspacing="0" id="table">
-    	<tr>
-    		<th width="3%">序列</th>
-    		<th width="8%">产品货号</th>
-    		<th width="10%">产品名称</th>
-    		<th width="8%">分类</th>
-    		<th width="5%">品牌</th>
-    		<th width="7%">图片</th>
-    		<th width="6%">视频</th>
-    		<th width="7%">原价</th>
-    		<th width="7%">折扣价</th>
-    		<th width="7%">最低订购量</th>
-    		<th width="7%">库存</th>
-    		<th width="6%">详情</th>
-    		<th width="10%">操作</th>
-        </tr>
-        
-        
-    </table>
-    <div class="pager">
-    	<a class="btna" href="javascript:void(0);" onclick="">上一页</a>
-    	
-        <a class="btna" href="javascript:void(0);" onclick="">下一页</a>
-    </div>
-    </form>
-</div>
-
-
-<div id="dialog" title="" style="display: none">
-	<video controls="controls"  width="356" height="200"  id="banner_video" src=""></video>
-</div>
-</body> --%>
 
 <body>
 	<div class="content">

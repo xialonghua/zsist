@@ -27,6 +27,19 @@ public class User extends BaseTime implements java.io.Serializable {
 	private String avatar;
 	private Integer level;
 	private Double money;
+
+    //location
+    private Float lng;
+    private Float lat;
+    private String province;
+    private String city;
+    private String cityCode;
+    private String adCode;//邮编
+    private String address;
+    private String country;
+    private String road;
+    private String poiName;
+    private String district;
 	
 	public User() {
 	}
@@ -120,5 +133,93 @@ public class User extends BaseTime implements java.io.Serializable {
 
     public void setPasswordMD5(String passwordMD5) {
         this.passwordMD5 = passwordMD5;
+    }
+
+    public Float getLng() {
+        return lng;
+    }
+
+    public void setLng(Float lng) {
+        this.lng = lng;
+    }
+
+    public Float getLat() {
+        return lat;
+    }
+
+    public void setLat(Float lat) {
+        this.lat = lat;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getAdCode() {
+        return adCode;
+    }
+
+    public void setAdCode(String adCode) {
+        this.adCode = adCode;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getRoad() {
+        return road;
+    }
+
+    public void setRoad(String road) {
+        this.road = road;
+    }
+
+    public String getPoiName() {
+        return poiName;
+    }
+
+    public void setPoiName(String poiName) {
+        this.poiName = poiName;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

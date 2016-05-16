@@ -180,16 +180,26 @@ public class UserAction extends JSONAction {
 	    setData(resp);
 	    return RETURN_JSON;
 	}
-	
+
 	@Action(value = "getAddresses", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String getAddresses() {
-	    Map<String, Object> session = getSession();
-	    
-	    User user = (User) session.get("user");
-	    
-	    BaseResp resp = userService.getAddresses(user.getId());
-	    setData(resp);
-	    return RETURN_JSON;
+		Map<String, Object> session = getSession();
+
+		User user = (User) session.get("user");
+
+		BaseResp resp = userService.getAddresses(user.getId());
+		setData(resp);
+		return RETURN_JSON;
+	}
+
+	@Action(value = "uploadLocation", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+	public String uploadLocation(){
+		User loginUser = getLoginUser();
+		user.setId(loginUser.getId());
+		BaseResp resp = userService.uploadLocation(user);
+		setData(resp);
+		return RETURN_JSON;
+//		SELECT id, ( 3959 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance FROM markers HAVING distance < 25 ORDER BY distance LIMIT 0 , 20;
 	}
 
 	public String getUsername() {

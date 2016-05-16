@@ -1,5 +1,6 @@
 package com.jiafang.action;
 
+import com.jiafang.model.User;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -16,6 +17,7 @@ import java.util.Map;
 @Results({ @Result(name = "json", type = "json", params = { "root", "data" }) })
 public class JSONAction implements Constants{
 	private Object data;
+	private User loginUser;
 	
 	public Object getData() {
 		return data;
@@ -32,5 +34,13 @@ public class JSONAction implements Constants{
 	protected Map<String, Object> getSession(){
 		ActionContext actionContext = ActionContext.getContext();
 		return actionContext.getSession();
+	}
+
+	public User getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 }

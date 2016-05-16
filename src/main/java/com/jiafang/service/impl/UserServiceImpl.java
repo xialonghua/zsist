@@ -373,6 +373,12 @@ public class UserServiceImpl implements UserService {
 		resp.setCode(SUCCESS);
 		return resp;
 	}
-	
-	
+
+    @Override
+    public BaseResp uploadLocation(User user) {
+        BaseResp resp = new BaseResp();
+        userDao.updateUserLocation(user.getId(), user.getCountry(), user.getProvince(), user.getCity(), user.getCityCode(), user.getAdCode(), user.getAddress(), user.getRoad(), user.getPoiName(), user.getDistrict(), user.getLng(), user.getLat());
+        resp.setCode(SUCCESS);
+        return resp;
+    }
 }

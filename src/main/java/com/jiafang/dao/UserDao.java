@@ -31,4 +31,7 @@ public interface UserDao {
 	public void setDefaultAddress(Integer addressId, Integer userId);
 	
 	public void delUser(Integer userId, Integer companyId, List<Product> products);
+
+	public void updateUserLocation(Integer userId, String country, String province, String city, String cityCode,
+								   String adCode, String address, String road, String poiName, String district, Float lng, Float lat);
 }

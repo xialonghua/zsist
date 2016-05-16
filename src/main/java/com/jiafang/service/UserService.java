@@ -40,4 +40,6 @@ public interface UserService extends Constants{
 	BaseResp getAddresses(Integer userId);
 	
 	BaseResp delUser(String tel);
+
+	BaseResp uploadLocation(User user);
 }

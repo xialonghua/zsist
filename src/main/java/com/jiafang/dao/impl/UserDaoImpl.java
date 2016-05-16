@@ -246,5 +246,27 @@ public class UserDaoImpl implements UserDao{
 	    session.getTransaction().commit();
 	}
 
-	
+    @Override
+    public void updateUserLocation(Integer userId, String country, String province, String city, String cityCode,
+                                   String adCode, String address, String road, String poiName, String district, Float lng, Float lat) {
+
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Query query = session.createQuery("update User set country =?, province=?, city=?,"
+                + " cityCode=?, adCode=?, address=?, road=?, poiName=?,lng=?, lat=?, district=? where id = ?");
+        query.setString(0, country)
+                .setString(1, province)
+                .setString(2, city)
+                .setString(3, cityCode)
+                .setString(4, adCode)
+                .setString(5, address)
+                .setString(6, road)
+                .setString(7, poiName)
+                .setFloat(8, lng)
+                .setFloat(9, lat)
+                .setString(10, district)
+                .setInteger(11, userId);
+        query.executeUpdate();
+        session.getTransaction().commit();
+    }
 }

@@ -29,6 +29,7 @@ public class LoginInterceptor extends AbstractInterceptor implements Constants{
             return invocation.invoke();  
         }  
         JSONAction action = (JSONAction) invocation.getAction();
+        action.setLoginUser(user);
         BaseResp resp = new BaseResp();
         resp.setCode(USER_NOT_LOGIN);
         action.setData(resp);
