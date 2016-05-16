@@ -1,0 +1,10 @@
+/*---------弹出框---------*/
+.ui-widget{border:1px solid #21aae1;background:#fff;color:#667176;}
+.ui-widget-t{border:1px solid #21aae1;}
+.ui-widget-f{border:1px solid #f00;}
+.toggler { width: 500px; height: 200px; }
+#newMsg { width: 260px;   position: absolute;  left:50%; margin-left:-160px; text-align:left; padding:40px 30px;  top:-132px; border-radius:4px;}
+#newMsg h3 { margin: 5px 10px; padding: 0.2em; text-align: left; font-weight: bold; text-align:center;   font-size:14px; height:28px;}
+.ui-widget p{display:inline-block;*zoom:1;*display:inline; line-height:30px;font-size:14px;word-break:break-all;word-wrap:break-word;}
+.ui-widget-t p{ background:url(../image/public/ture.png) no-repeat left; padding-left:60px; vertical-align:middle; }
+.ui-widget-f p{background:url(../image/public/false.png) no-repeat left; padding-left:60px; vertical-align:middle;}

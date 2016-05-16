@@ -1,0 +1,33 @@
+@CHARSET "UTF-8";
+#head_div {
+	height: 120px;
+	background: #48B9F2;
+}
+#font {
+	text-align: center;
+	color: white;
+	font-size: 40px;
+	padding-top: 30px;
+}
+#body_div {
+	margin-top: 50px;
+	text-align: center;	
+}
+#login{
+	font-size: 30px;
+}
+#login_body{
+	margin-top: 100px;
+}
+#input{
+	font-size:20px;
+	margin-top: 20px;
+}
+#input input {
+	width: 200px;
+	height: 30px;
+}
+#button_login {
+	margin-top: 20px;
+}
+	

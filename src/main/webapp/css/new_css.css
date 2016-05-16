@@ -1,0 +1,35 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*弹层 9b9b9b*/
+.popup{width:1000px;background-color: #fff;font-family:microsoft yahei;border: 1px solid #ccc;display: none;}
+.popup .hd{background:#9b9b9b;width: 1000px;height: 28px;line-height:28px;text-align:center;}
+	.popup .title{color:#fff;font-size:14px;font-weight:700;}
+	.popup .closeIcon{float:right;width:28px;height:28px;cursor:pointer;}
+.popup .bd{text-align: center;width: 1000px;padding: 30px 0;}
+	.popup .bd textarea{width:150px;height:24px;line-height:24px;border:1px solid #ccc;border-radius:5px;padding: 3px;}
+	.popup .btn-s1{height:24px;line-height:24px;position:relative;top:3px;}
+	.popup .ft{text-align:center;padding-bottom:20px;}
+	.popup .ft .queding{margin-right:20px;}
+	
+	.popup td{height:30px;text-align:center;}
+	.popup td.tt{text-align:right;padding-right: 20px;width:40%;}
+
+/*路由地址*/
+.lydz.popup .bd{padding:10px;width:auto;padding-left:30px;}
+
+.popup .btn{
+	background-color:#21aae1;
+	padding:0 12px;
+	border:none;
+	height:30px;
+	line-height:30px;
+	font-size:14px;
+	color:#FFF;
+	margin-right:5px;
+	border-radius:3px;
+}
+.popup .btn:hover{
+	background-color:#239ecf;
+	
+}
