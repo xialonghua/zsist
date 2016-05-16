@@ -104,7 +104,7 @@
             var getResponse = function () {
                 var self = $(this);
                 JiaFang.showLoading("正在添加...");
-                $.post("${_ctx_}/web/product/addProductParam", $("#addForm").serialize(), function (data) {
+                $.post("${_ctx_}/product/addProductParam", $("#addForm").serialize(), function (data) {
                     JiaFang.hideLoading();
                     //关闭对话框
                     self.dialog("close");
@@ -155,7 +155,7 @@
                 var self = $(this);
                 JiaFang.showLoading("正在修改...");
                 var v = $("#modForm").serialize() + "&param.id=" + id;
-                $.post("${_ctx_}/web/product/modifyProductParam", v, function (data) {
+                $.post("${_ctx_}/product/modifyProductParam", v, function (data) {
                     JiaFang.hideLoading();
                     //关闭对话框
                     self.dialog("close");

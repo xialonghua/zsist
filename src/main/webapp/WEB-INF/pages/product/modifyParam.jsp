@@ -8,7 +8,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$.ajax({
-		url : '${_ctx_}/web/product/getProductParamById',// 跳转到 action
+		url : '${_ctx_}/product/getProductParamById',// 跳转到 action
 		data : {
 			paramId:"${paramId}"
 		},
@@ -34,7 +34,7 @@ $(document).ready(function(){
 });
 
 function submitForm(){
-	$.post("${_ctx_}/web/product/modifyProductParam",$("#addForm").serialize(),function(data) {
+	$.post("${_ctx_}/product/modifyProductParam",$("#addForm").serialize(),function(data) {
 		if(data.code==200){
 			$("#submit").attr('disabled',true);
 			JiaFang.showSuccessToast("修改产品参数成功！");
