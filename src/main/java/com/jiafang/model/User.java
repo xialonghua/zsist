@@ -222,4 +222,6 @@ public class User extends BaseTime implements java.io.Serializable {
     public void setDistrict(String district) {
         this.district = district;
     }
+
+
 }
