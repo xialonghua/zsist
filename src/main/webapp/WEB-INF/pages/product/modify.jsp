@@ -23,7 +23,7 @@ $(document).ready(function(){
 				var product = data.data;
 				$("#name").val(product.name);
 				$("#num").val(product.num);
-				$("#picUrlKey").val(product.avatar);
+				$("#picUrlKey_avatar").val(product.avatar);
 				$("#videoUrlKey").val(product.video);
 				$("#price").val(product.price);
 				$("#discountPrice").val(product.discountPrice);
@@ -55,13 +55,12 @@ $(document).ready(function(){
 });
 
 function submitForm(){
-	$.post("${_ctx_}/product/modifyProduct",$("#addForm").serialize(),function(data) {
+    var se = $("#addForm").serialize();
+	$.post("${_ctx_}/product/modifyProduct", se,function(data) {
 		if(data.code==200){
 			$("#submit").attr('disabled',true);
 			JiaFang.showSuccessToast("修改产品成功！");
-			setTimeout(function(){
-				window.location.href="${_ctx_ }/page/productlist";
-			}, 3000);
+            window.location.href="${_ctx_ }/page/productlist";
 		}
 		else {
 			JiaFang.showFailedToast("修改产品失败！"+data.description);
@@ -128,7 +127,7 @@ function deleteVideo(){
                             <td class="c02 bg07">图片</td>
                             <td>
                                  <img id="banner_avatar" alt="" src="" width="100px"> 
-               		 			 <input type="hidden" name="product.avatar" id="picUrlKey" value="">
+               		 			 <input type="hidden" name="product.avatar" id="picUrlKey_avatar" value="">
                                 <!-- Button trigger modal -->
                                 <button type="button" data-target="#modal" data-toggle="modal">
                                     图片上传以及编辑

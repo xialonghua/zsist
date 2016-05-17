@@ -220,7 +220,7 @@ function JiaFang() {
 	
 	this.addCompanyPic = function(pic,call){
 		$.ajax({
-			url : baseUrl+'/web/company/addCompanyPic',// 跳转到 action
+			url : baseUrl+'/company/addCompanyPic',// 跳转到 action
 			data : {
 				'pic.url': pic.url,
 				'pic.type': pic.type,
@@ -247,7 +247,7 @@ function JiaFang() {
 	
 	this.modifyCompanyPic = function(pic,call){
 		$.ajax({
-			url : baseUrl+'/web/company/modifyCompanyPic',// 跳转到 action
+			url : baseUrl+'/company/modifyCompanyPic',// 跳转到 action
 			data : {
 				'pic.id': pic.id,
 				'pic.url': pic.url
