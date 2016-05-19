@@ -2,6 +2,7 @@ package com.jiafang.filter;
 
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.ParentPackage;
 
 import com.jiafang.action.JSONAction;

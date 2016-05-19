@@ -32,6 +32,10 @@ public class Company extends BaseTime implements java.io.Serializable,Categoryab
 	private String culture;
 	private String address;
 	private Integer weight;
+
+	private String province;
+	private String city;
+	private String area;
 	
 	private String joinProcess;//加盟流程
 	private String joinCondition;//加盟条件
@@ -278,5 +282,29 @@ public class Company extends BaseTime implements java.io.Serializable,Categoryab
 
 	public void setPicUpdateTime(Date picUpdateTime) {
 		this.picUpdateTime = picUpdateTime;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
 	}
 }
