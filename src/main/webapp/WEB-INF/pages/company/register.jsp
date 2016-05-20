@@ -59,14 +59,14 @@ $(document).ready(function(){
 });
 function submitForm(){
 	
-	$.post("${_ctx_}/web/company/registerCompany",$("#newsForm").serialize(),function(data) {
+	$.post("${_ctx_}/company/registerCompany",$("#newsForm").serialize(),function(data) {
 		if(data.code==200){
 			$("#submit").attr('disabled',true);
 			JiaFang.showSuccessToast("注册公司成功！");
 			//alert("注册公司成功！");
 			setTimeout(function(){
 				window.location.href="${_ctx_ }/page/companyinfo";
-			}, 3000);
+			}, 1000);
 		}
 		else {
 			JiaFang.showFailedToast("注册公司失败！");
