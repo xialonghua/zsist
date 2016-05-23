@@ -381,4 +381,14 @@ public class UserServiceImpl implements UserService {
         resp.setCode(SUCCESS);
         return resp;
     }
+
+	@Override
+	public BaseResp getProvinces() {
+		BaseResp resp = new BaseResp();
+		resp.setData(userDao.getProvinces());
+		resp.setCode(SUCCESS);
+		return resp;
+	}
+
+
 }

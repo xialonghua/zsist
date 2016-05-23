@@ -42,4 +42,6 @@ public interface UserService extends Constants{
 	BaseResp delUser(String tel);
 
 	BaseResp uploadLocation(User user);
+
+	BaseResp getProvinces();
 }

@@ -23,6 +23,9 @@ public class Address extends BaseTime implements java.io.Serializable {
 	private String name;
 	private String tel;
 	private String zipcode;
+	private String province;
+	private String city;
+	private String area;
 	private String address;
 	private Integer isDefault;//0-不是 1-是
 	
@@ -94,5 +97,28 @@ public class Address extends BaseTime implements java.io.Serializable {
 		this.isDefault = isDefault;
 	}
 
-	
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
 }
