@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jiafang.model.*;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -14,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.jiafang.dao.UserDao;
-import com.jiafang.model.Address;
-import com.jiafang.model.Company;
-import com.jiafang.model.Product;
-import com.jiafang.model.User;
 import com.jiafang.util.StringUtil;
 import com.qiniu.util.StringUtils;
 
@@ -269,4 +266,9 @@ public class UserDaoImpl implements UserDao{
         query.executeUpdate();
         session.getTransaction().commit();
     }
+
+	@Override
+	public List<Province> getProvinces() {
+		return null;
+	}
 }
