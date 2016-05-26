@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jiafang.model.Order;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import com.jiafang.model.OrderProduct;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.jiafang.dao.OrderDao;
 import com.jiafang.model.Cart;
+
 
 @Repository
 public class OrderDaoImpl implements OrderDao{
@@ -39,9 +38,9 @@ public class OrderDaoImpl implements OrderDao{
 
 	@Override
 	public void delCart(Integer userId, Integer cartId) {
-		Session session = sessionFactory.getCurrentSession();  
+		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
-		
+
 		String hql="delete Cart as p where p.id=? and p.userId=? and p.orderId is null";
 		Query query=session.createQuery(hql);
 		query.setInteger(0, cartId);
@@ -72,7 +71,7 @@ public class OrderDaoImpl implements OrderDao{
 	@Override
 	public List<Cart> getCarts(Integer userId) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(Cart.class);
-		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.isNotNull("orderId")));
+		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.isNull("orderId")));
 		return query.list();
 	}
 
@@ -92,58 +91,40 @@ public class OrderDaoImpl implements OrderDao{
 		return (Cart) query.uniqueResult();
 	}
 
-	@Override
-	public void delCartsByUserId(Integer userId) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        String hql="delete Cart as p where p.userId=? and p.orderId is null";
-        Query query=session.createQuery(hql);
-        query.setInteger(0, userId);
-        query.executeUpdate();
-        session.getTransaction().commit();
-	}
-
-    @Override
-    public void updateCartsOrderId(List<Integer> cartsId, Integer orderId) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-
-        for (Integer cartId : cartsId){
-            String hql="update Cart cart set cart.orderId=? where cart.id=?";
-            Query query=session.createQuery(hql);
-            query.setInteger(0, cartId);
-            query.setInteger(1, orderId);
-            query.executeUpdate();
-        }
-
-        session.getTransaction().commit();
-    }
-
     @Override
     public Order saveOrder(Order order) {
         Session query = sessionFactory.getCurrentSession();
+		Transaction transaction = query.beginTransaction();
         query.save(order);
+		for (OrderProduct p : order.getProducts()){
+			p.setOrderId(order.getId());
+			query.save(p);
+		}
+		transaction.commit();
         return order;
     }
 
     @Override
-	public List<Cart> getCartsByCartsId(Integer userId, List<Integer> cartsId) {
-        List<Cart> carts = new ArrayList<>();
-        for (Integer cartId : cartsId){
-            Cart cart = getCart(userId, cartId);
-            if (cart == null){
-                continue;
-            }
-            carts.add(cart);
-        }
-        return carts;
-	}
-
-	@Override
-	public List<Order> getOrdersByUserId(Integer userId) {
+    public Order getOrder(Integer userId, Integer orderId) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("userId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
-        return query.list();
-	}
+        query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("id", orderId)));
+        return (Order) query.uniqueResult();
+    }
+
+    @Override
+    public void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus) {
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+
+        String hql="update Orders set orderState=? where id=? and userId=?";
+        Query query=session.createQuery(hql);
+        query.setInteger(0, orderStatus);
+        query.setInteger(1, orderId);
+        query.setInteger(2, userId);
+        query.executeUpdate();
+        session.getTransaction().commit();
+
+    }
+
+
 }

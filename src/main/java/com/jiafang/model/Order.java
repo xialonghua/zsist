@@ -16,20 +16,37 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Order extends BaseTime implements java.io.Serializable {
 
 	private Integer id;
-	private Integer userId;
+	private Integer userId;//买家id
 
-	private Double totalPrice;
-    private String name;
-    private String tel;
-    private String zipcode;
-    private String address;
-    private String cartIds;//相关的商品ID
-    private Integer orderState;
+    private Integer companyId;//卖家公司ID
 
+	private Double totalPrice;//总价
+
+    private String name;//收件人
+    private String tel;//电话
+
+    private String province;//省
+    private String city;//市
+    private String area;//区
+    private String zipcode;//邮编
+    private String address;///详细地址
+    private Integer orderState;//订单状态 0未付款, 1已付款, 2已发货, 3已完成, 4订单关闭;
+
+    private List<OrderProduct> products;//货物
     private String dispatchNum;//物流编号,用于查询物流信息
+
+    private String extraInfo;//额外信息
+    private String remark;//客户备注
 
     private String payNum;//交易号
     private String orderNum;//订单编号
+
+    private Integer payType; //支付方式 0-微信 1-支付宝
+
+    private Long createTime;//创建时间
+    private Long packTime;//发货时间
+    private Long receiveTime;//收货时间
+    private Long cancelTime;//取消时间
 
 	public Order() {
 	}
@@ -106,15 +123,6 @@ public class Order extends BaseTime implements java.io.Serializable {
     }
 
     @Column
-    public String getCartIds() {
-        return cartIds;
-    }
-
-    public void setCartIds(String cartIds) {
-        this.cartIds = cartIds;
-    }
-
-    @Column
     public String getPayNum() {
         return payNum;
     }
@@ -141,5 +149,102 @@ public class Order extends BaseTime implements java.io.Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getExtraInfo() {
+        return extraInfo;
+    }
+
+    public void setExtraInfo(String extraInfo) {
+        this.extraInfo = extraInfo;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Transient
+    public List<OrderProduct> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<OrderProduct> products) {
+        this.products = products;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+    }
+
+    public Integer getPayType() {
+        return payType;
+    }
+
+    public void setPayType(Integer payType) {
+        this.payType = payType;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getPackTime() {
+        return packTime;
+    }
+
+    public void setPackTime(Long packTime) {
+        this.packTime = packTime;
+    }
+
+    public Long getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(Long receiveTime) {
+        this.receiveTime = receiveTime;
+    }
+
+    public Long getCancelTime() {
+        return cancelTime;
+    }
+
+    public void setCancelTime(Long cancelTime) {
+        this.cancelTime = cancelTime;
     }
 }

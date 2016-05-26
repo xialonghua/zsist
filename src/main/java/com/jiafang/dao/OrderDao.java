@@ -15,17 +15,14 @@ public interface OrderDao {
 
 	List<Cart> getCarts(Integer userId);
 
-    List<Cart> getCartsByCartsId(Integer userId, List<Integer> cartsId);
-
-    List<Order> getOrdersByUserId(Integer userId);
-	
 	Cart getCart(Integer userId, Integer cartId);
 	
 	Cart getCartBySubProductId(Integer userId, Integer subProductId);
-	
-	void delCartsByUserId(Integer userId);
 
-    void updateCartsOrderId(List<Integer> cartsId, Integer orderId);
+	Order saveOrder(Order order);
 
-    Order saveOrder(Order order);
+    Order getOrder(Integer userId, Integer orderId);
+
+    void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus);
+
 }

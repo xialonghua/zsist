@@ -37,7 +37,7 @@ public class OrderAction extends JSONAction {
         Map<String, Object> session = getSession();
 
         User user = (User) session.get("user");
-        setData(orderService.submitOrder(user.getId(), cartIds, addressId));
+        setData(orderService.submitOrder(user.getId(), order));
         return RETURN_JSON;
     }
 

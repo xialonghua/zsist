@@ -1,5 +1,6 @@
 package com.jiafang.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,8 @@ import com.gotye.entity.*;
 import com.jiafang.dao.UserDao;
 import com.jiafang.model.*;
 import com.jiafang.service.bean.Ad;
+import com.jiafang.util.StringUtil;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import com.jiafang.dao.OrderDao;
 import com.jiafang.dao.ProductDao;
 import com.jiafang.service.OrderService;
 import com.jiafang.service.bean.CartBean;
+import org.springframework.util.StringUtils;
 
 @Service
 @Transactional
@@ -101,57 +105,94 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
-	public BaseResp submitOrder(Integer userId, String orderIds, Integer addressId) {
+	public BaseResp submitOrder(Integer userId, Order order) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
 
-        String[] ids = orderIds.split(",");
-        List<Integer> idss = new ArrayList<>();
-        for (String id : ids){
-            idss.add(Integer.valueOf(id));
-        }
+		order.setUserId(userId);
+		order.setOrderState(OrderState.未付款.ordinal());
+		order.setOrderNum((1000000000 + userId) + System.currentTimeMillis() + "" + (int)(Math.random() * 100));
+		order.setCreateTime(System.currentTimeMillis());
 
-        Address address = userDao.getAddressById(userId, addressId);
-        if (address == null){
-            resp.setCode(ADDRESS_NOT_FOUND);
-            return resp;
-        }
+		if (StringUtils.isEmpty(order.getProvince())
+				|| StringUtils.isEmpty(order.getCity())
+				|| StringUtils.isEmpty(order.getArea())
+				|| StringUtils.isEmpty(order.getAddress())){
+			resp.setCode(ADDRESS_NOT_FOUND);
+			return resp;
+		}
+		List<OrderProduct> products = order.getProducts();
+		if (products == null || products.size() == 0){
+			resp.setCode(INVALIDAT_REQUEST);
+			return resp;
+		}
 
-        List<Cart> carts = orderDao.getCartsByCartsId(userId, idss);
-        List<CartBean> cbs = cartToCartbean(carts);
+		BigDecimal totalPrice = new BigDecimal(0);
+		Integer companyId = null;
+		for (OrderProduct orderProduct : products){
+			Product p = productDao.queryById(orderProduct.getProductId());
+			if (p == null){
+				resp.setCode(PRODUCT_NOT_FOUND);
+				return resp;
+			}
+			if (companyId != null && companyId != p.getCompanyId()){
+				if (p == null){
+					resp.setCode(INVALIDAT_REQUEST);
+					return resp;
+				}
+			}
+			companyId = p.getCompanyId();
 
-        for (CartBean bean : cbs){
+			orderProduct.setDiscountPrice(p.getDiscountPrice());
+			orderProduct.setPrice(p.getPrice());
+			orderProduct.setName(p.getName());
+			orderProduct.setAvatar(p.getAvatar());
+			orderProduct.setVideo(p.getVideo());
+			orderProduct.setOrderNum(order.getOrderNum());
 
-            List<Cart> cs = bean.getCarts();
-            StringBuffer sb = new StringBuffer();
-            for (Cart c : cs){
-                sb.append(c.getId()).append(",");
-            }
-            if (sb.toString().contains(",")){
-                sb.substring(0, sb.length() - 1);
-            }
+			totalPrice = totalPrice.add(new BigDecimal(p.getDiscountPrice() * p.getCount()));
+		}
+		order.setTotalPrice(totalPrice.doubleValue());
+		order.setCompanyId(companyId);
 
-            Order order = new Order();
-            order.setAddress(address.getAddress());
-            order.setName(address.getName());
-            order.setTel(address.getTel());
-            order.setZipcode(address.getZipcode());
-            order.setCartIds(sb.toString());
-            order.setUserId(userId);
-            order.setTotalPrice(bean.getTotalPrice());
-            order.setOrderState(OrderState.未付款.ordinal());
-            order.setOrderNum(System.currentTimeMillis() + "" + userId);
-
-            orderDao.saveOrder(order);
-            orderDao.updateCartsOrderId(idss, order.getId());
-        }
-        resp.setCode(SUCCESS);
+		orderDao.saveOrder(order);
+		resp.setData(order);
         return resp;
 	}
 
 	@Override
 	public BaseResp cancelOrder(Integer userId, Integer orderId) {
-		return null;
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		Order order = orderDao.getOrder(userId, orderId);
+		if (order == null){
+			resp.setCode(ORDER_NOT_FOUND);
+			return resp;
+		}
+		Integer status = order.getOrderState();
+		if (status.intValue() == OrderState.已完成.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_FINISHED);
+			return resp;
+		}
+		if (status.intValue() == OrderState.已发货.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_DISPATCH);
+			return resp;
+		}
+		if (status.intValue() == OrderState.订单关闭.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_CLOSE);
+			return resp;
+		}
+		if (status.intValue() == OrderState.订单取消.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_CANCEL);
+			return resp;
+		}
+		orderDao.updateOrderStatus(userId, orderId, OrderState.订单取消.ordinal());
+		resp.setCode(SUCCESS);
+		return resp;
 	}
 
 	@Override

@@ -20,10 +20,17 @@ public interface Constants {
 	int PRODUCT_NOT_FOUND = 1003;
 	int SUB_PRODUCT_NOT_FOUND = 1004;
 
-
 	int ADDRESS_NOT_FOUND = 2001;//地址不存在
-	
-	public interface Platform {
+
+    int ORDER_NOT_FOUND = 3001;//订单不存在
+//    int ORDER_CANT_CANCEL = 3002;//订单已发货不能取消
+    int ORDER_ALREADY_CANCEL = 3003;//订单已经取消
+    int ORDER_ALREADY_CLOSE = 3004;//订单已经关闭
+    int ORDER_ALREADY_FINISHED = 3005;//订单已经完成
+    int ORDER_ALREADY_DISPATCH = 3006;//订单已经发货
+
+
+    public interface Platform {
 		int IOS = 0;
 		int ANDROID = 1;
 	}

@@ -2,10 +2,11 @@ package com.jiafang.service;
 
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
+import com.jiafang.model.Order;
 
 public interface OrderService extends Constants{
 
-	BaseResp submitOrder(Integer userId, String orderIds, Integer addressId);
+	BaseResp submitOrder(Integer userId, Order order);
 
     BaseResp cancelOrder(Integer userId, Integer orderId);
 
