@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.jiafang.action.JSONAction;
 import com.jiafang.model.Order;
+import com.jiafang.service.Page;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -31,6 +32,7 @@ public class OrderAction extends JSONAction {
     private Integer addressId;
     private String cartIds;//逗号隔开
     private Order order;
+    private Page page;
 
 	@Action(value = "submitOrder", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
     public String submitOrder() {
@@ -46,7 +48,13 @@ public class OrderAction extends JSONAction {
         Map<String, Object> session = getSession();
 
         User user = (User) session.get("user");
-        setData(orderService.getOrders(user.getId()));
+		Integer orderStatus = null;
+		if (order == null){
+			orderStatus = -1;
+		}else {
+			orderStatus = order.getOrderState();
+		}
+        setData(orderService.getOrders(user.getId(), orderStatus, page));
         return RETURN_JSON;
     }
 
@@ -158,5 +166,13 @@ public class OrderAction extends JSONAction {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
     }
 }

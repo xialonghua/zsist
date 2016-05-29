@@ -41,7 +41,7 @@ public class UserAction extends JSONAction {
 	private Integer userId;
 	
 	private User user;
-	private Address address = new Address();
+	private Address address;
 	
 	@Action(value = "login")
 	public String login() {
@@ -121,9 +121,8 @@ public class UserAction extends JSONAction {
 	
 	@Action(value = "modifyUserInfo", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String modifyUserInfo() {
-	    Map<String, Object> session = getSession();
 	    
-	    User user = (User) session.get("user");
+	    User user = getLoginUser();
 	    User newUser = getUser();
 	    
 	    newUser.setId(user.getId());
@@ -139,9 +138,8 @@ public class UserAction extends JSONAction {
 	
 	@Action(value = "addAddress", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String addAddress() {
-	    Map<String, Object> session = getSession();
 	    
-	    User user = (User) session.get("user");
+	    User user = getLoginUser();
 	    address.setUserId(user.getId());
 	    BaseResp resp = userService.addAddress(address);
 	    setData(resp);
@@ -149,9 +147,8 @@ public class UserAction extends JSONAction {
 	}
 	@Action(value = "modifyAddress", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String modifyAddress() {
-	    Map<String, Object> session = getSession();
 	    
-	    User user = (User) session.get("user");
+	    User user = getLoginUser();
 	    address.setUserId(user.getId());
 	    BaseResp resp = userService.modifyAddress(address);
 	    setData(resp);
@@ -159,9 +156,8 @@ public class UserAction extends JSONAction {
 	}
 	@Action(value = "delAddress", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String delAddress() {
-	    Map<String, Object> session = getSession();
 	    
-	    User user = (User) session.get("user");
+	    User user = getLoginUser();
 
 	    address.setUserId(user.getId());
 	    BaseResp resp = userService.delAddress(address);
@@ -171,9 +167,8 @@ public class UserAction extends JSONAction {
 	
 	@Action(value = "setDefaultAddress", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String setDefaultAddress() {
-	    Map<String, Object> session = getSession();
-	    
-	    User user = (User) session.get("user");
+
+	    User user = getLoginUser();
 
 	    address.setUserId(user.getId());
 	    BaseResp resp = userService.setDefaultAddress(address);
@@ -183,9 +178,8 @@ public class UserAction extends JSONAction {
 
 	@Action(value = "getAddresses", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String getAddresses() {
-		Map<String, Object> session = getSession();
 
-		User user = (User) session.get("user");
+		User user = getLoginUser();
 
 		BaseResp resp = userService.getAddresses(user.getId());
 		setData(resp);

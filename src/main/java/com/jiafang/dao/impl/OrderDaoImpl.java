@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.jiafang.model.Order;
 import com.jiafang.model.OrderProduct;
+import com.jiafang.service.Page;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +110,29 @@ public class OrderDaoImpl implements OrderDao{
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
         query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("id", orderId)));
         return (Order) query.uniqueResult();
+    }
+
+    @Override
+    public List<OrderProduct> getOrderProducts(Integer orderId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(OrderProduct.class);
+        query.add(Restrictions.and(Restrictions.eq("orderId", orderId)));
+        return query.list();
+    }
+
+    @Override
+    public List<Order> getOrders(Integer userId, Page page) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+        query.add(Restrictions.and(Restrictions.eq("userId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
+    }
+
+    @Override
+    public List<Order> getOrders(Integer userId, Integer orderStatus, Page page) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+        query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("orderStatus", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
     }
 
     @Override

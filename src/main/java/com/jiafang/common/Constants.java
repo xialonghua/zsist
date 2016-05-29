@@ -28,6 +28,7 @@ public interface Constants {
     int ORDER_ALREADY_CLOSE = 3004;//订单已经关闭
     int ORDER_ALREADY_FINISHED = 3005;//订单已经完成
     int ORDER_ALREADY_DISPATCH = 3006;//订单已经发货
+    int ORDER_ALREADY_PAY = 3007;//订单已经取消
 
 
     public interface Platform {

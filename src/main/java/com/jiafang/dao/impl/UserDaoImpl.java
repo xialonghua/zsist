@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jiafang.model.*;
+import com.jiafang.service.bean.Ad;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -104,8 +105,11 @@ public class UserDaoImpl implements UserDao{
 		if(address.getUserId() == null){
 			throw new NullPointerException();
 		}
-		Session session = sessionFactory.getCurrentSession();  
-		session.saveOrUpdate(address);
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        session.saveOrUpdate(address);
+        session.flush();
+        session.getTransaction().commit();
 		return address;
 	}
 
@@ -144,19 +148,23 @@ public class UserDaoImpl implements UserDao{
 	@Override
 	public void setDefaultAddress(Integer addressId, Integer userId) {
 		Session session = sessionFactory.getCurrentSession();  
-		session.beginTransaction();  
+		session.beginTransaction();
+
 		Criteria query = session.createCriteria(Address.class);
+		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("isDefault", 1)));
+		List<Address> temps = query.list();
+		for (Address address : temps){
+			address.setIsDefault(0);
+			session.saveOrUpdate(address);
+		}
+
+		query = session.createCriteria(Address.class);
 		query.add(Restrictions.and(Restrictions.idEq(addressId), Restrictions.eq("userId", userId)));
 	    Address temp = (Address) query.uniqueResult();
-	    
+		temp.setIsDefault(1);
 	    session.saveOrUpdate(temp);
 	    
-	    query = session.createCriteria(Address.class);
-		query.add(Restrictions.and(Restrictions.idEq(addressId), Restrictions.eq("userId", userId), Restrictions.eq("isDefault", 1)));
-	    temp = (Address) query.uniqueResult();
-	    temp.setIsDefault(0);
-	    
-	    session.saveOrUpdate(temp);
+
 	    session.flush();
 	    session.getTransaction().commit();
 	}

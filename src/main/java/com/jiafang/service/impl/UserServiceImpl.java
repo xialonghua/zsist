@@ -318,11 +318,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public BaseResp addAddress(Address address) {
-		BaseResp resp = new BaseResp();
-		address = userDao.saveOrModifyAddress(address);
-		resp.setCode(SUCCESS);
-		resp.setData(address);
-		return resp;
+		return modifyAddress(address);
 	}
 
 	@Override

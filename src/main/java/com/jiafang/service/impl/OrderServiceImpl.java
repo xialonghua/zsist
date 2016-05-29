@@ -7,7 +7,9 @@ import java.util.List;
 import com.gotye.entity.*;
 import com.jiafang.dao.UserDao;
 import com.jiafang.model.*;
+import com.jiafang.service.Page;
 import com.jiafang.service.bean.Ad;
+import com.jiafang.service.bean.PayInfo;
 import com.jiafang.util.StringUtil;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +113,7 @@ public class OrderServiceImpl implements OrderService{
 
 		order.setUserId(userId);
 		order.setOrderState(OrderState.未付款.ordinal());
-		order.setOrderNum((1000000000 + userId) + System.currentTimeMillis() + "" + (int)(Math.random() * 100));
+		order.setOrderNum((10000000L + userId) + "" + System.currentTimeMillis() + "" + (int)(Math.random() * 100));
 		order.setCreateTime(System.currentTimeMillis());
 
 		if (StringUtils.isEmpty(order.getProvince())
@@ -150,10 +152,23 @@ public class OrderServiceImpl implements OrderService{
 			orderProduct.setVideo(p.getVideo());
 			orderProduct.setOrderNum(order.getOrderNum());
 
-			totalPrice = totalPrice.add(new BigDecimal(p.getDiscountPrice() * p.getCount()));
+			Double discountPrice = p.getDiscountPrice();
+			if (discountPrice == null){
+				discountPrice = p.getPrice();
+			}
+			if (discountPrice == null){
+				discountPrice = 0.0;
+			}
+			Integer count = p.getCount();
+			if (count == null){
+				count = 0;
+			}
+
+			totalPrice = totalPrice.add(new BigDecimal(discountPrice).multiply(new BigDecimal(count)));
 		}
 		order.setTotalPrice(totalPrice.doubleValue());
 		order.setCompanyId(companyId);
+		order.setPayType(null);
 
 		orderDao.saveOrder(order);
 		resp.setData(order);
@@ -190,14 +205,80 @@ public class OrderServiceImpl implements OrderService{
 			resp.setCode(ORDER_ALREADY_CANCEL);
 			return resp;
 		}
+		if (status.intValue() == OrderState.已付款.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_PAY);
+			return resp;
+		}
 		orderDao.updateOrderStatus(userId, orderId, OrderState.订单取消.ordinal());
 		resp.setCode(SUCCESS);
 		return resp;
 	}
 
 	@Override
-	public BaseResp getOrders(Integer userId) {
-		return null;
+	public BaseResp pay(Integer userId, Integer orderId, Integer payType) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		Order order = orderDao.getOrder(userId, orderId);
+		if (order == null){
+			resp.setCode(ORDER_NOT_FOUND);
+			return resp;
+		}
+		Integer status = order.getOrderState();
+		if (status.intValue() == OrderState.已完成.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_FINISHED);
+			return resp;
+		}
+		if (status.intValue() == OrderState.已发货.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_DISPATCH);
+			return resp;
+		}
+		if (status.intValue() == OrderState.订单关闭.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_CLOSE);
+			return resp;
+		}
+		if (status.intValue() == OrderState.订单取消.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_CANCEL);
+			return resp;
+		}
+		if (status.intValue() == OrderState.已付款.ordinal()){
+
+			resp.setCode(ORDER_ALREADY_PAY);
+			return resp;
+		}
+		//TODO 创建订单
+
+		PayInfo info = new PayInfo();
+		info.setPayType(payType);
+		resp.setCode(SUCCESS);
+		return resp;
+	}
+
+	@Override
+	public BaseResp getOrders(Integer userId, Integer orderStatus, Page page) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		List<Order> orders = null;
+		if (orderStatus == null || orderStatus.intValue() == -1){
+			orders = orderDao.getOrders(userId, page);
+		}else {
+			orders = orderDao.getOrders(userId, orderStatus, page);
+
+		}
+
+		if (orders == null){
+			orders = new ArrayList<>();
+		}
+		for (Order o : orders){
+			o.setProducts(orderDao.getOrderProducts(o.getId()));
+		}
+
+		resp.setData(orders);
+		return resp;
 	}
 
     private List<CartBean> cartToCartbean(List<Cart> carts){

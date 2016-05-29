@@ -23,6 +23,8 @@ public class Version extends BaseTime implements java.io.Serializable {
 	private Integer version;
 	private Integer platform;
 	private String url;
+	private Integer isForce;
+
 	private String desp;
 	
 	
@@ -86,4 +88,11 @@ public class Version extends BaseTime implements java.io.Serializable {
 		this.platform = platform;
 	}
 
+    public Integer getIsForce() {
+        return isForce;
+    }
+
+    public void setIsForce(Integer isForce) {
+        this.isForce = isForce;
+    }
 }

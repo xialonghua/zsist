@@ -8,9 +8,11 @@ public interface OrderService extends Constants{
 
 	BaseResp submitOrder(Integer userId, Order order);
 
-    BaseResp cancelOrder(Integer userId, Integer orderId);
+	BaseResp cancelOrder(Integer userId, Integer orderId);
 
-    BaseResp getOrders(Integer userId);
+	BaseResp pay(Integer userId, Integer orderId, Integer payType);
+
+    BaseResp getOrders(Integer userId, Integer orderStatus, Page page);
 
 	BaseResp addCart(Integer userId, Integer subProductId, int count);
 	

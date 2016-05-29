@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.jiafang.model.Cart;
 import com.jiafang.model.Order;
+import com.jiafang.model.OrderProduct;
+import com.jiafang.service.Page;
 
 public interface OrderDao {
 
@@ -19,9 +21,13 @@ public interface OrderDao {
 	
 	Cart getCartBySubProductId(Integer userId, Integer subProductId);
 
+	List<OrderProduct> getOrderProducts(Integer orderId);
 	Order saveOrder(Order order);
 
     Order getOrder(Integer userId, Integer orderId);
+
+    List<Order> getOrders(Integer userId, Page page);
+    List<Order> getOrders(Integer userId, Integer orderStatus, Page page);
 
     void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus);
 
