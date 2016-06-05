@@ -309,6 +309,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public BaseResp getUsers(Page page) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+        List<User> users = userDao.getUsers(page);
+		resp.setData(users);
+		resp.setPage(page);
+		return resp;
+	}
+
+	@Override
+    public BaseResp getUserTags(Integer userId) {
+        BaseResp resp = new BaseResp();
+        resp.setCode(SUCCESS);
+        resp.setData(userDao.getUserTags(userId));
+        return resp;
+    }
+
+    @Override
 	public BaseResp modifyUserInfo(User user) {
 		BaseResp resp = new BaseResp();
 		userDao.updateUserInfo(user.getId(), user.getNickname(), user.getAvatar());

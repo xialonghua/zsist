@@ -112,7 +112,14 @@ public class OrderDaoImpl implements OrderDao{
         return (Order) query.uniqueResult();
     }
 
-    @Override
+	@Override
+	public Order getOrder(String orderNum) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		query.add(Restrictions.and(Restrictions.eq("orderNum", orderNum)));
+		return (Order) query.uniqueResult();
+	}
+
+	@Override
     public List<OrderProduct> getOrderProducts(Integer orderId) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(OrderProduct.class);
         query.add(Restrictions.and(Restrictions.eq("orderId", orderId)));
@@ -128,9 +135,25 @@ public class OrderDaoImpl implements OrderDao{
     }
 
     @Override
+    public List<Order> getSellerOrders(Integer userId, Page page) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+        query.add(Restrictions.and(Restrictions.eq("sellerId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
+    }
+
+    @Override
     public List<Order> getOrders(Integer userId, Integer orderStatus, Page page) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
         query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("orderStatus", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
+    }
+
+    @Override
+    public List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+        query.add(Restrictions.and(Restrictions.eq("sellerId", userId), Restrictions.eq("orderStatus", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
@@ -141,7 +164,7 @@ public class OrderDaoImpl implements OrderDao{
         session.beginTransaction();
 
         String hql="update Orders set orderState=? where id=? and userId=?";
-        Query query=session.createQuery(hql);
+        Query query=session.createSQLQuery(hql);
         query.setInteger(0, orderStatus);
         query.setInteger(1, orderId);
         query.setInteger(2, userId);
@@ -149,6 +172,39 @@ public class OrderDaoImpl implements OrderDao{
         session.getTransaction().commit();
 
     }
+
+    @Override
+    public void updateOrderLogisticsInfo(Integer userId, Integer orderId, String logisticsInfo) {
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+
+        String hql="update Orders set logisticsInfo=? where id=? and userId=?";
+        Query query=session.createSQLQuery(hql);
+        query.setString(0, logisticsInfo);
+        query.setInteger(1, orderId);
+        query.setInteger(2, userId);
+        query.executeUpdate();
+        session.getTransaction().commit();
+
+    }
+
+	@Override
+	public void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		String hql="update Orders set payAccount=?, payNum=?, payType=?, payTime=? where id=? and userId=?";
+		Query query=session.createSQLQuery(hql);
+		query.setString(0, payAccount);
+		query.setString(1, payNo);
+        query.setInteger(2, payType);
+        query.setLong(3, payTime);
+		query.setInteger(4, orderId);
+		query.setInteger(5, userId);
+		query.executeUpdate();
+		session.getTransaction().commit();
+
+	}
 
 
 }

@@ -585,7 +585,7 @@ function JiaFang() {
     }
 
     this.getUrl = function(element, data){
-        $.get(baseUrl+"/qiniu/getToken",{"url":data},function(json){
+        $.get("../qiniu/getToken",{"url":data},function(json){
             $("#"+element).attr("src", json);
         },"json");
     };

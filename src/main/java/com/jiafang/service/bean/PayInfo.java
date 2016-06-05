@@ -8,8 +8,10 @@ import java.util.List;
 
 public class PayInfo {
 
-	private Integer payType;
-	private String payKey;
+	private Integer payType;//0-weixin 1-ali
+	private String orderNum;
+    private String payKey;
+
 
     public Integer getPayType() {
         return payType;
@@ -17,6 +19,14 @@ public class PayInfo {
 
     public void setPayType(Integer payType) {
         this.payType = payType;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
     }
 
     public String getPayKey() {

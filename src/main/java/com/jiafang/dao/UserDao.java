@@ -2,17 +2,19 @@ package com.jiafang.dao;
 
 import java.util.List;
 
-import com.jiafang.model.Address;
-import com.jiafang.model.Product;
-import com.jiafang.model.Province;
-import com.jiafang.model.User;
+import com.jiafang.model.*;
+import com.jiafang.service.Page;
 
 public interface UserDao {
 
 	public User queryByUsername(String username, String tel);
-	
-	public User queryByUserId(Integer userId);
-	
+
+	public List<User> getUsers(Page page);
+
+    public User queryByUserId(Integer userId);
+
+    public List<UserTag> getUserTags(Integer userId);
+
 	public void updateUserInfo(Integer userId, String nickname, String avatar);
 	
 	public User saveUser(User user);

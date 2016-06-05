@@ -39,14 +39,19 @@ public class CompanyAction extends JSONAction {
 		setData(companyService.getCompanyById(companyId));
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "getCompanyByUserId")
 	public String getCompanyByUserId() {
 		ActionContext actionContext = ActionContext.getContext();
-	    Map<String, Object> session = actionContext.getSession();
-	    User user = (User) session.get("user");
+		Map<String, Object> session = actionContext.getSession();
+		User user = (User) session.get("user");
 		setData(companyService.getCompanyByUserId(user.getId()));
 		return RETURN_JSON;
+	}
+
+	@Action(value = "getSelfCompany")
+	public String getSelfCompany() {
+		return getCompanyByUserId();
 	}
 	
 	@Action(value = "registerCompany")

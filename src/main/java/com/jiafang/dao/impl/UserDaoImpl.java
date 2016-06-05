@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.jiafang.model.*;
+import com.jiafang.service.Page;
 import com.jiafang.service.bean.Ad;
+import com.jiafang.util.Config;
+import com.jiafang.util.QiniuHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,6 +37,27 @@ public class UserDaoImpl implements UserDao{
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(User.class)
 				.add(Restrictions.or(Restrictions.eq("username", username), Restrictions.eq("tel", tel)));
 		return (User) query.uniqueResult();
+	}
+
+	@Override
+	public List<User> getUsers(Page page) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(User.class).addOrder(org.hibernate.criterion.Order.desc("id"));
+		query.setFirstResult(page.getIndex());
+		query.setMaxResults(page.getPageSize());
+		List<User> list = query.list();
+        for (User u : list){
+            u.setPassword("");
+            if (!org.springframework.util.StringUtils.isEmpty(u.getAvatar())){
+                u.setAvatar(QiniuHelper.getDownUrl(Config.getFileUrl() + u.getAvatar(), 24));
+            }else {
+                u.setAvatar(null);
+            }
+
+        }
+		query = sessionFactory.getCurrentSession().createCriteria(User.class);
+		query.setProjection(Projections.rowCount());
+		page.setTotal(Integer.parseInt(query.uniqueResult().toString()));
+		return list;
 	}
 
 	@Override
@@ -81,7 +105,14 @@ public class UserDaoImpl implements UserDao{
 		return (User) query.uniqueResult();
 	}
 
-	@Override
+    @Override
+    public List<UserTag> getUserTags(Integer userId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(UserTag.class)
+                .add(Restrictions.eq("userId", userId));
+        return query.list();
+    }
+
+    @Override
 	public void updateUserInfo(Integer userId, String nickname, String avatar) {
 		Session session = sessionFactory.getCurrentSession();  
 		session.beginTransaction();  
@@ -187,7 +218,7 @@ public class UserDaoImpl implements UserDao{
 //		String queryPics6 = "select avatar, video from subproduct where product_id=?";
 //		String queryPics7 = "select avatar from brand where companyId=?";
 
-		
+        String delTags = "delete from usertag where userId=" + userId;
 		String delBrand = "delete from brand where company_id=" + companyId;
 		String delParam = "delete from param where product_id=?";
 		String delRelationship = "delete from categoryrelationship where product_id=?";
@@ -218,6 +249,8 @@ public class UserDaoImpl implements UserDao{
 			q.setParameter(0, p.getId());
 			q.executeUpdate();
 		}
+        q = session.createSQLQuery(delTags);
+        q.executeUpdate();
 		q = session.createSQLQuery(delBrand);
 		q.executeUpdate();
 		q = session.createSQLQuery(delCompany);

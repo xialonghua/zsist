@@ -1,12 +1,14 @@
 package com.jiafang.action.resp;
 
 import com.jiafang.common.Constants;
+import com.jiafang.service.Page;
 
 public class BaseResp implements Constants {
 
     private Integer code;
     private Object data;
     private String description;
+    private Page page;
 
     public Integer getCode() {
         return code;
@@ -76,5 +78,13 @@ public class BaseResp implements Constants {
                 break;
         }
         return "";
+    }
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
     }
 }

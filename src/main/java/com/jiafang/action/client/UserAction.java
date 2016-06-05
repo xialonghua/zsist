@@ -3,6 +3,7 @@ package com.jiafang.action.client;
 import java.util.Map;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.service.Page;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -42,13 +43,22 @@ public class UserAction extends JSONAction {
 	
 	private User user;
 	private Address address;
-	
+    private Page page;
+
 	@Action(value = "login")
 	public String login() {
-	    Map<String, Object> session = getSession();
-	    BaseResp resp = userService.login(username, password, session);
-	    setData(resp);
-	    return RETURN_JSON;
+		Map<String, Object> session = getSession();
+		BaseResp resp = userService.login(username, password, session);
+		setData(resp);
+		return RETURN_JSON;
+	}
+
+	@Action(value = "getTags")
+	public String getTags() {
+		User user = getLoginUser();
+		BaseResp resp = userService.getUserTags(user.getId());
+		setData(resp);
+		return RETURN_JSON;
 	}
 	
 	@Action(value = "getVerifyCode")
@@ -186,6 +196,14 @@ public class UserAction extends JSONAction {
 		return RETURN_JSON;
 	}
 
+	@Action(value = "getUsers", interceptorRefs={@InterceptorRef(ADMIN_INTERCEPTOR)})
+	public String getUsers() {
+
+		BaseResp resp = userService.getUsers(page);
+		setData(resp);
+		return RETURN_JSON;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -257,6 +275,12 @@ public class UserAction extends JSONAction {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
-	
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
+    }
 }

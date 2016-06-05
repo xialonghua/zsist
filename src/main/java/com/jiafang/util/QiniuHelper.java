@@ -86,6 +86,10 @@ public class QiniuHelper {
 		}
 		return downloadUrl.toString();
 	}
+
+	public static String getDownUrl(String downUrl, Integer expireHour) {
+		return auth.privateDownloadUrl(downUrl, 3600 * expireHour);
+	}
 	
 	public static String getToken(){
 		return auth.uploadToken(LOAD_TOKEN);

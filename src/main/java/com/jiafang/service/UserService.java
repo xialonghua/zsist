@@ -12,8 +12,12 @@ import com.jiafang.model.VerifyCodeType;
 public interface UserService extends Constants{
 
 	BaseResp login(String account, String password, Map<String, Object> session);
-	
+
 	BaseResp getUserInfo(Integer userId);
+
+	BaseResp getUsers(Page page);
+
+	BaseResp getUserTags(Integer userId);
 	
 	BaseResp modifyUserInfo(User user);
 

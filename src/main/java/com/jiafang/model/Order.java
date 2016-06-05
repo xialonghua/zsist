@@ -16,7 +16,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Order extends BaseTime implements java.io.Serializable {
 
 	private Integer id;
-	private Integer userId;//买家id
+    private Integer userId;//买家id
+
+    private Integer SellerId;//买家id
 
     private Integer companyId;//卖家公司ID
 
@@ -34,16 +36,19 @@ public class Order extends BaseTime implements java.io.Serializable {
 
     private List<OrderProduct> products;//货物
     private String dispatchNum;//物流编号,用于查询物流信息
+    private String logisticsInfo;//物流信息
 
     private String extraInfo;//额外信息
     private String remark;//客户备注
 
+    private String payAccount;//付款帐号
     private String payNum;//交易号
     private String orderNum;//订单编号
 
     private Integer payType; //支付方式 0-微信 1-支付宝
 
     private Long createTime;//创建时间
+    private Long payTime;//创建时间
     private Long packTime;//发货时间
     private Long receiveTime;//收货时间
     private Long cancelTime;//取消时间
@@ -246,5 +251,37 @@ public class Order extends BaseTime implements java.io.Serializable {
 
     public void setCancelTime(Long cancelTime) {
         this.cancelTime = cancelTime;
+    }
+
+    public String getPayAccount() {
+        return payAccount;
+    }
+
+    public void setPayAccount(String payAccount) {
+        this.payAccount = payAccount;
+    }
+
+    public Long getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Long payTime) {
+        this.payTime = payTime;
+    }
+
+    public String getLogisticsInfo() {
+        return logisticsInfo;
+    }
+
+    public void setLogisticsInfo(String logisticsInfo) {
+        this.logisticsInfo = logisticsInfo;
+    }
+
+    public Integer getSellerId() {
+        return SellerId;
+    }
+
+    public void setSellerId(Integer sellerId) {
+        SellerId = sellerId;
     }
 }

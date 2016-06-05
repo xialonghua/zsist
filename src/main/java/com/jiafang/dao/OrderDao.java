@@ -24,11 +24,18 @@ public interface OrderDao {
 	List<OrderProduct> getOrderProducts(Integer orderId);
 	Order saveOrder(Order order);
 
-    Order getOrder(Integer userId, Integer orderId);
+    public void updateOrderLogisticsInfo(Integer userId, Integer orderId, String logisticsInfo);
+
+	Order getOrder(Integer userId, Integer orderId);
+
+	Order getOrder(String orderNum);
 
     List<Order> getOrders(Integer userId, Page page);
+    List<Order> getSellerOrders(Integer userId, Page page);
     List<Order> getOrders(Integer userId, Integer orderStatus, Page page);
+    List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page);
 
     void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus);
+    void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime);
 
 }

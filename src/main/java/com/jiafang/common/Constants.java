@@ -1,9 +1,16 @@
 package com.jiafang.common;
 
 public interface Constants {
+
+    //支付方式
+	int PAY_ALI = 1;
+	int PAY_WEIXIN = 0;
+
 	String LOGIN_INTERCEPTOR = "loginInteceptor";
+	String ADMIN_INTERCEPTOR = "adminLoginInteceptor";
 	String RETURN_JSON = "json";
-	int SUCCESS = 200;
+    int SUCCESS = 200;
+    int SYSTEM_ERROR = 199;
 	
 	int INVALIDAT_REQUEST = 99;//无效请求
 	int USER_NOT_FOUND = 201;//用户不存在
@@ -28,7 +35,11 @@ public interface Constants {
     int ORDER_ALREADY_CLOSE = 3004;//订单已经关闭
     int ORDER_ALREADY_FINISHED = 3005;//订单已经完成
     int ORDER_ALREADY_DISPATCH = 3006;//订单已经发货
-    int ORDER_ALREADY_PAY = 3007;//订单已经取消
+    int ORDER_ALREADY_PAY = 3007;//订单已经支付过
+    int ORDER_ALREADY_NOT_PAY = 3008;//订单未支付
+
+    int PAY_UNKOWN_TYPE = 4001;//无效的付款方式
+    int PAY_DISCONNECT = 4002;//联系三方支付失败
 
 
     public interface Platform {
