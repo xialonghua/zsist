@@ -1,9 +1,15 @@
 package com.jiafang.action.client;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jiafang.action.JSONAction;
 import com.jiafang.service.Page;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -44,6 +50,55 @@ public class UserAction extends JSONAction {
 	private User user;
 	private Address address;
     private Page page;
+
+    static int i= 0;
+	@Action(value = "getToken")
+	public String getToken() {
+		Map<String, String> m = new HashMap<String, String>();
+		m.put("scope", "room");
+//		m.put("password", "333333");
+//		m.put("roomId", "210401");
+//		String secretKey = DigestUtils.md5Hex("210401333333877de5d784344ba19b6694930c66a570");
+
+        m.put("password", "123123");
+        m.put("roomId", "212600");
+        String secretKey = DigestUtils.md5Hex("212600123123a11617e9fb20430b8f0f6785d462da18");
+
+
+
+        m.put("secretKey", secretKey);
+		m.put("nickName", "ss" + i++);
+//		m.put("roomKey", this.roomKey);
+		ObjectMapper mapper = new ObjectMapper();
+        String param = null;
+        try {
+            param = mapper.writeValueAsString(m);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        String res = ApiCall.post("https://livevip.com.cn/liveApi/AccessToken", param, null);
+        System.out.println(res);
+        mapper = new ObjectMapper();
+
+//		BaseResp resp = new BaseResp();
+        try {
+            setData(mapper.readValue(res, Map.class).get("accessToken"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.print(m.get("nickName").toString() + " = " + getData().toString());
+        ServletActionContext.getResponse().addHeader("Access-Control-Allow-Origin", "*");
+//        ServletActionContext.getResponse().addHeader("Access-Control-Allow-Methods", "POST");
+        ServletActionContext.getResponse().addHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
+        try {
+            System.out.println("," + mapper.readValue(res, Map.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return RETURN_JSON;
+	}
+
 
 	@Action(value = "login")
 	public String login() {

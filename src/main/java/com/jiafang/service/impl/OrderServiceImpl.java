@@ -11,6 +11,7 @@ import com.jiafang.model.*;
 import com.jiafang.service.Page;
 import com.jiafang.service.bean.PayInfo;
 import com.jiafang.util.AliPayUtils;
+import com.jiafang.util.PushUtil;
 import com.jiafang.util.StringUtil;
 import com.jiafang.util.weixin.com.tenpay.ClientRequestHandler;
 import com.jiafang.util.weixin.com.tenpay.PrepayIdRequestHandler;
@@ -193,12 +194,15 @@ public class OrderServiceImpl implements OrderService {
         order.setSellerId(sellerId);
 
         orderDao.saveOrder(order);
+
+        PushUtil.newOrder(sellerId, order.getId());
         resp.setData(order);
         return resp;
     }
 
     @Override
-    public BaseResp cancelOrder(Integer userId, Integer orderId) {
+    public BaseResp cancelOrder(User user, Integer orderId) {
+        Integer userId = user.getId();
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         Order order = orderDao.getOrder(userId, orderId);
@@ -233,6 +237,8 @@ public class OrderServiceImpl implements OrderService {
             return resp;
         }
         orderDao.updateOrderStatus(userId, orderId, OrderState.订单取消.ordinal());
+
+        PushUtil.cancelOrder(order.getSellerId(), orderId, user.getNickname());
         resp.setCode(SUCCESS);
         return resp;
     }
@@ -345,8 +351,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp queryPayStatus(Integer userId, Integer orderId, String payNum, String aliResult) {
+    public BaseResp queryPayStatus(User user, Integer orderId, String payNum, String aliResult) {
         BaseResp resp = new BaseResp();
+
+        Integer userId = user.getId();
 
         Order order = orderDao.getOrder(userId, orderId);
         if (order == null) {
@@ -381,7 +389,7 @@ public class OrderServiceImpl implements OrderService {
 
                 orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
                 orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
-
+                PushUtil.payOrder(order.getSellerId(), order.getId(), user.getNickname());
                 resp.setCode(SUCCESS);
                 resp.setData(order);
                 return resp;
@@ -448,15 +456,18 @@ public class OrderServiceImpl implements OrderService {
             resp.setCode(ORDER_NOT_FOUND);
             return resp;
         }
+        order.setProducts(orderDao.getOrderProducts(order.getId()));
+
         resp.setData(order);
         return resp;
     }
 
     @Override
-    public BaseResp sendOrder(Integer userId, Integer orderId, String logistics) {
+    public BaseResp sendOrder(User user, Integer orderId, String logistics) {
+        Integer userId = user.getId();
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
-        Order order = orderDao.getOrder(userId, orderId);
+        Order order = orderDao.getSellerOrder(userId, orderId);
         if (order == null) {
             resp.setCode(ORDER_NOT_FOUND);
             return resp;
@@ -493,15 +504,18 @@ public class OrderServiceImpl implements OrderService {
             return resp;
         }
 
-        orderDao.updateOrderStatus(userId, orderId, OrderState.已发货.ordinal());
+        orderDao.updateOrderStatusBySeller(userId, orderId, OrderState.已发货.ordinal());
 
         orderDao.updateOrderLogisticsInfo(userId, orderId, logistics);
+
+        PushUtil.sendOrder(order.getUserId(), order.getId(), order.getExtraInfo(), user.getNickname());
         resp.setCode(SUCCESS);
         return resp;
     }
 
     @Override
-    public BaseResp receiveOrder(Integer userId, Integer orderId) {
+    public BaseResp receiveOrder(User user, Integer orderId) {
+        Integer userId = user.getId();
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         Order order = orderDao.getOrder(userId, orderId);
@@ -537,6 +551,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderDao.updateOrderStatus(userId, orderId, OrderState.已完成.ordinal());
+
+        PushUtil.receiveOrder(order.getSellerId(), orderId, order.getExtraInfo(), user.getNickname());
         resp.setCode(SUCCESS);
         return resp;
     }
@@ -643,6 +659,17 @@ public class OrderServiceImpl implements OrderService {
             orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
             orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
 
+            User buyer = userDao.queryByUserId(order.getUserId());
+            String nickname = "";
+            if (buyer == null){
+                nickname = "";
+            }else {
+                nickname = buyer.getNickname();
+            }
+
+
+            PushUtil.payOrder(order.getSellerId(), order.getId(), nickname);
+
             return "SUCCESS";
         }
 //		Map<String, Object> session = getSession();
@@ -670,7 +697,7 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
 
-
+//        PushUtil.payOrder(order.getSellerId(), order.getId(), nickname);
         return "SUCCESS";
     }
 }

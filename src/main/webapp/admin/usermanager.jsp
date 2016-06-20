@@ -152,6 +152,8 @@
                                 <th data-field="username">帐号</th>
                                 <th data-field="nickname">昵称</th>
                                 <th data-field="level">账户类型</th>
+                                <th data-field="companyName">公司名称</th>
+                                <th data-field="companyTel">公司电话</th>
 
                                 <th data-field="operation" data-formatter="operation">操作</th>
                             </tr>

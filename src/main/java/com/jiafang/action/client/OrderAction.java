@@ -56,7 +56,7 @@ public class OrderAction extends JSONAction {
 		Map<String, Object> session = getSession();
 
 		User user = (User) session.get("user");
-		setData(orderService.sendOrder(user.getId(), order.getId(), order.getLogisticsInfo()));
+		setData(orderService.sendOrder(user, order.getId(), order.getLogisticsInfo()));
 		return RETURN_JSON;
 	}
 
@@ -65,7 +65,7 @@ public class OrderAction extends JSONAction {
 		Map<String, Object> session = getSession();
 
 		User user = (User) session.get("user");
-		setData(orderService.receiveOrder(user.getId(), order.getId()));
+		setData(orderService.receiveOrder(user, order.getId()));
 		return RETURN_JSON;
 	}
 
@@ -114,7 +114,7 @@ public class OrderAction extends JSONAction {
         Map<String, Object> session = getSession();
 
         User user = (User) session.get("user");
-        setData(orderService.cancelOrder(user.getId(), order.getId()));
+        setData(orderService.cancelOrder(user, order.getId()));
         return RETURN_JSON;
     }
 	
@@ -171,7 +171,7 @@ public class OrderAction extends JSONAction {
 
 		User user = (User) session.get("user");
 
-		setData(orderService.queryPayStatus(user.getId(), order.getId(), order.getPayNum(), aliResult));
+		setData(orderService.queryPayStatus(user, order.getId(), order.getPayNum(), aliResult));
 		return RETURN_JSON;
 	}
 

@@ -3,6 +3,7 @@ package com.jiafang.service;
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
 import com.jiafang.model.Order;
+import com.jiafang.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,17 +11,17 @@ public interface OrderService extends Constants{
 
 	BaseResp submitOrder(Integer userId, Order order);
 
-	BaseResp cancelOrder(Integer userId, Integer orderId);
+	BaseResp cancelOrder(User user, Integer orderId);
 
     BaseResp pay(Integer userId, Integer orderId, Integer payType);
 
-    BaseResp queryPayStatus(Integer userId, Integer orderId, String payNum, String aliResult);
+    BaseResp queryPayStatus(User user, Integer orderId, String payNum, String aliResult);
 
     BaseResp getOrders(Integer userId, Integer orderStatus, Page page);
     BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page);
     BaseResp getOrder(Integer userId, Integer orderId);
-    BaseResp sendOrder(Integer userId, Integer orderId, String logistics);
-    BaseResp receiveOrder(Integer userId, Integer orderId);
+    BaseResp sendOrder(User user, Integer orderId, String logistics);
+    BaseResp receiveOrder(User user, Integer orderId);
 
 	BaseResp addCart(Integer userId, Integer subProductId, int count);
 	

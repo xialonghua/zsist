@@ -105,12 +105,19 @@ public class OrderDaoImpl implements OrderDao{
         return order;
     }
 
-    @Override
-    public Order getOrder(Integer userId, Integer orderId) {
-        Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("id", orderId)));
-        return (Order) query.uniqueResult();
-    }
+	@Override
+	public Order getOrder(Integer userId, Integer orderId) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		query.add(Restrictions.and(Restrictions.eq("id", orderId), Restrictions.or(Restrictions.eq("sellerId", userId), Restrictions.eq("userId", userId))));
+		return (Order) query.uniqueResult();
+	}
+
+	@Override
+	public Order getSellerOrder(Integer sellerId, Integer orderId) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		query.add(Restrictions.and(Restrictions.eq("sellerId", sellerId), Restrictions.eq("id", orderId)));
+		return (Order) query.uniqueResult();
+	}
 
 	@Override
 	public Order getOrder(String orderNum) {
@@ -158,27 +165,42 @@ public class OrderDaoImpl implements OrderDao{
         return query.list();
     }
 
-    @Override
-    public void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
+	@Override
+	public void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
 
-        String hql="update Orders set orderState=? where id=? and userId=?";
-        Query query=session.createSQLQuery(hql);
-        query.setInteger(0, orderStatus);
-        query.setInteger(1, orderId);
-        query.setInteger(2, userId);
-        query.executeUpdate();
-        session.getTransaction().commit();
+		String hql="update Orders set orderState=? where id=? and userId=?";
+		Query query=session.createSQLQuery(hql);
+		query.setInteger(0, orderStatus);
+		query.setInteger(1, orderId);
+		query.setInteger(2, userId);
+		query.executeUpdate();
+		session.getTransaction().commit();
 
-    }
+	}
+
+	@Override
+	public void updateOrderStatusBySeller(Integer userId, Integer orderId, Integer orderStatus) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		String hql="update Orders set orderState=? where id=? and sellerId=?";
+		Query query=session.createSQLQuery(hql);
+		query.setInteger(0, orderStatus);
+		query.setInteger(1, orderId);
+		query.setInteger(2, userId);
+		query.executeUpdate();
+		session.getTransaction().commit();
+
+	}
 
     @Override
     public void updateOrderLogisticsInfo(Integer userId, Integer orderId, String logisticsInfo) {
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
 
-        String hql="update Orders set logisticsInfo=? where id=? and userId=?";
+        String hql="update Orders set logisticsInfo=? where id=? and sellerId=?";
         Query query=session.createSQLQuery(hql);
         query.setString(0, logisticsInfo);
         query.setInteger(1, orderId);

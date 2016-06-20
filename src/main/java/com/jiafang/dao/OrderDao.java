@@ -27,6 +27,7 @@ public interface OrderDao {
     public void updateOrderLogisticsInfo(Integer userId, Integer orderId, String logisticsInfo);
 
 	Order getOrder(Integer userId, Integer orderId);
+	public Order getSellerOrder(Integer sellerId, Integer orderId);
 
 	Order getOrder(String orderNum);
 
@@ -35,6 +36,7 @@ public interface OrderDao {
     List<Order> getOrders(Integer userId, Integer orderStatus, Page page);
     List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page);
 
+	public void updateOrderStatusBySeller(Integer userId, Integer orderId, Integer orderStatus);
     void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus);
     void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime);
 

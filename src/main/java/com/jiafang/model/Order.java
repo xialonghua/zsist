@@ -18,7 +18,7 @@ public class Order extends BaseTime implements java.io.Serializable {
 	private Integer id;
     private Integer userId;//买家id
 
-    private Integer SellerId;//买家id
+    private Integer sellerId;//买家id
 
     private Integer companyId;//卖家公司ID
 
@@ -278,10 +278,10 @@ public class Order extends BaseTime implements java.io.Serializable {
     }
 
     public Integer getSellerId() {
-        return SellerId;
+        return sellerId;
     }
 
     public void setSellerId(Integer sellerId) {
-        SellerId = sellerId;
+        this.sellerId = sellerId;
     }
 }
