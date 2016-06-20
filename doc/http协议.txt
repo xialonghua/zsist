@@ -1,0 +1,146 @@
+http://51hotmm.com:8080/bu-1.0/xxxxx
+7rfleo.com1.z0.glb.clouddn.com
+
+Ak:Oo0xoMRiwPxyVjzIq0bNynY6YCh2ZSc8m5CbBJiT
+Sk:KJt0Is640mwbJ9sj6Aov6MMcbDACfH9xOjd8Duvq
+
+====>账号等级枚举COMMON, COMPANY, MANAGER, ADMIN
+====>订单状态
+
+public enum OrderState {
+
+	未付款, 已付款, 已发货, 已收货, 已完成, 订单关闭, 订单取消;
+}
+
+=======================
+
+	push type
+
+=======================
+public enum PushType {
+
+	NEW_ORDER, CANCEL_ORDER, PAY_ORDER, SEND_ORDER, RECEIVE_ORDER, URL_NOTIFY;
+}
+
+extra: 
+	key —> t //push type 一定有的
+根据推送类型区分，以下是各种类型的不同的协议
+a)t = NEW_ORDER;
+	key —> orderId //order id
+b)t = CANCEL_ORDER;
+	key —> orderId //order id
+c)t = PAY_ORDER;
+	key —> orderId //order id
+d)t = SEND_ORDER;
+	key —> orderId //order id
+e)t = RECEIVE_ORDER;
+	key —> orderId //order id
+f)t = URL_NOTIFY;
+	key —> url //url
+
+
+
+1.获取分类
+http://localhost:8080/bu/category/getCategories?page.page=0&page.pageSize=9999
+
+4.获取广告
+http://localhost:8080/bu/ad/getAds
+
+2.获取厂家
+http://localhost:8080/bu/company/getCompanies?page.page=0&page.pageSize=10
+
+3.根据分类获取产品
+http://localhost:8080/bu/product/getProductsByCategory?page.page=0&page.pageSize=10&categoryId=2
+
+5.获取专区
+http://localhost:8080/bu/zone/getZones
+
+6通过产品名字在分类下搜索
+http://localhost:8080/bu/search/seachProductsByCategory?name=%E6%9E%95%E8%8A%AF&page.page=0&page.pageSize=10&categoryId=2
+
+7通过产品名搜索
+http://localhost:8080/bu/search/seachProducts?name=%E6%9E%95%E8%8A%AF&page.page=0&page.pageSize=10
+
+8通过产品名字在公司下搜索
+http://localhost:8080/bu/search/seachProductsByCompany?name=%E6%9E%95%E8%8A%AF&page.page=0&page.pageSize=10&companyId=1
+
+9.根据公司获取产品
+http://localhost:8080/bu/product/getProductsByCompany?page.page=0&page.pageSize=10&companyId=1
+
+10.获取公司
+http://localhost:8080/bu/company/getCompany?companyId=1
+
+11.登录
+user/login?username=xxx&password=xxx
+
+12.获取验证码
+user/getVerifyCode?verifyCodeType=0&tel=xxx
+
+13.注册
+user/regist?verifyCode=333&username=xxx&password=xxx
+
+14.根据ID获取商品
+http://localhost:8080/bu/product/getProductById?productId=1
+
+15.获取用户信息
+/user/getUserInfoById?userId=
+
+16.修改用户信息
+/user/modifyUserInfo?user.avatar=&user.nickname=
+
+17.获取最新版本  （platform:0-ios 1-android）channel目前写死填1
+/update/checkUpdate?platform=0&channel=1  
+
+22.添加收货地址
+/user/addAddress?address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=
+23.编辑收货地址
+/user/modifyAddress?address.id=&address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=
+24.删除收货地址
+/user/delAddress?address.id=
+25.设置默认收货地址
+/user/setDefaultAddress?address.id=
+26.获取收货地址
+/user/getAddresses
+
+22.提交订单 
+/order/submitOrder?order.name=&order.tel=&order.province=&order.city=&order.area=&order.zipcode=&order.address=&order.extraInfo=&order.remark=&order.payType=&order.products[0].productId=&order.products[0].count=
+
+
+23.取消订单
+/order/cancelOrder?order.id=
+24.付款,生成订单号//0-weixin 1-ali
+/order/pay?order.id=&order.payAccount
+25.获取买家订单列表
+/order/getOrders?order.orderStatus=-1(-1表示所有)&page.page=0&page.pageSize=10   
+
+26.上传坐标
+/location/uploadLocation?user.lng=&user.lat=&user.lat=&user.province =&user.city=&user.cityCode=&user.adCode=&user.address=&user.country=&user.road=&user.poiName=&user.district=
+
+27.获取用户标签,客户端获取到设置到推送里
+/user/getTags(暂无)
+
+28.获取订单详情
+/order/getOrderDetail?order.id=
+
+28.确认收货（目前直接完成订单）
+/order/receiveOrder?order.id=
+
+29.发货
+/order/sendOrder?order.id=&order.logisticsInfo=
+
+25.获取卖家家订单列表
+/order/getSellerOrders?order.orderStatus=-1(-1表示所有)&page.page=0&page.pageSize=10
+
+25.获取自己的公司信息
+/company/getSelfCompany
+
+
+
+
+
+
+
+
+
+
+
