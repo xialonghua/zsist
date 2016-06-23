@@ -128,11 +128,17 @@ http://localhost:8080/bu/product/getProductById?productId=1
 29.发货
 /order/sendOrder?order.id=&order.logisticsInfo=
 
-25.获取卖家家订单列表
+30.获取卖家家订单列表
 /order/getSellerOrders?order.orderStatus=-1(-1表示所有)&page.page=0&page.pageSize=10
 
-25.获取自己的公司信息
+31.获取自己的公司信息
 /company/getSelfCompany
+
+32.查询阿里订单
+/order/queryPayStatus?order.id=&order.payNum=&aliResult=
+
+33.查询微信订单
+/order/queryWeChatPayStatus?order.id=&order.payNum=
 
 
 
