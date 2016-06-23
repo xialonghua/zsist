@@ -109,7 +109,7 @@ http://localhost:8080/bu/product/getProductById?productId=1
 23.取消订单
 /order/cancelOrder?order.id=
 24.付款,生成订单号//0-weixin 1-ali
-/order/pay?order.id=&order.payAccount
+/order/pay?order.id=&order.payType=&order.payAccount=
 25.获取买家订单列表
 /order/getOrders?order.orderStatus=-1(-1表示所有)&page.page=0&page.pageSize=10   
 
