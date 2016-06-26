@@ -92,9 +92,9 @@ http://localhost:8080/bu/product/getProductById?productId=1
 /update/checkUpdate?platform=0&channel=1  
 
 22.添加收货地址
-/user/addAddress?address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=
+/user/addAddress?address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=&xxxx
 23.编辑收货地址
-/user/modifyAddress?address.id=&address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=
+/user/modifyAddress?address.id=&address.name=刘淦&address.tel=&address.zipcode=&address.address=&address.province=&address.city=&address.area=&xxxx
 24.删除收货地址
 /user/delAddress?address.id=
 25.设置默认收货地址
