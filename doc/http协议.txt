@@ -140,6 +140,9 @@ http://localhost:8080/bu/product/getProductById?productId=1
 33.查询微信订单
 /order/queryWeChatPayStatus?order.id=
 
+34.查询微信订单
+/order/queryStatus?order.id=&order.payType=
+
 
 
 
