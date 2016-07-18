@@ -6,8 +6,8 @@ public class ConstantUtil {
 	 */
 
 	//初始化
-	public static String APP_ID = "wx25c97878de5441e4";//微信开发平台应用id
-	public static String APP_SECRET = "a979a68959dc420273078b7b9d2992f4";//应用对应的凭证
+	public static String APP_ID = "0";//微信开发平台应用id
+	public static String APP_SECRET = "0";//应用对应的凭证
 	//应用对应的密钥
 	public static String APP_KEY = "L8LrMqqeGRxST5reouB0K66CaYAWpqhAVsq7ggKkxHCOastWksvuX1uvmvQclxaHoYd3ElNBrNO2DHnnzgfVG9Qs473M3DTOZug5er46FhuGofumV8H2FVR9qkjSlC5K";
 	public static String PARTNER = "1348676101";//财付通商户号
