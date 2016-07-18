@@ -8,6 +8,7 @@ public interface Constants {
 
 	String LOGIN_INTERCEPTOR = "loginInteceptor";
 	String ADMIN_INTERCEPTOR = "adminLoginInteceptor";
+	String COMPANY_INTERCEPTOR = "companyLoginInteceptor";
 	String RETURN_JSON = "json";
     int SUCCESS = 200;
     int SYSTEM_ERROR = 199;

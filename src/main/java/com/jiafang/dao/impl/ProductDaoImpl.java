@@ -63,7 +63,28 @@ public class ProductDaoImpl implements ProductDao{
 //			product.setParams(query.list());
 			products.add(product);
 		}
-		
+
+		return products;
+	}
+
+	@Override
+	public List<Product> queryByCatrgoryId(Page page, Integer categoryId, Integer companyId) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+		query.add(Restrictions.and(Restrictions.eq("companyId", companyId), Restrictions.eq("categoryId", categoryId)));
+
+		query.addOrder(Order.desc("weight"));
+//		query.addOrder(Order.desc("id"));
+		query.addOrder(Order.desc("avatar"));
+		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		List<CategoryRelationship> ships = query.list();
+		List<Product> products = new ArrayList<Product>();
+		for(CategoryRelationship ship : ships){
+			query = sessionFactory.getCurrentSession().createCriteria(Product.class);
+			query.add(Restrictions.eq("id", ship.getProductId()));
+			Product product = (Product) query.uniqueResult();
+			products.add(product);
+		}
+
 		return products;
 	}
 

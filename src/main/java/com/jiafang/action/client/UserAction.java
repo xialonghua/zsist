@@ -7,6 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.*;
 import com.jiafang.service.Page;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.struts2.ServletActionContext;
@@ -17,11 +18,6 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jiafang.action.resp.BaseResp;
-import com.jiafang.model.Address;
-import com.jiafang.model.Company;
-import com.jiafang.model.User;
-import com.jiafang.model.UserLevel;
-import com.jiafang.model.VerifyCodeType;
 import com.jiafang.service.CompanyService;
 import com.jiafang.service.UserService;
 import com.opensymphony.xwork2.ActionContext;
@@ -51,6 +47,8 @@ public class UserAction extends JSONAction {
 	private Address address;
     private Page page;
 
+    private UserCompanyBind bind;
+
     static int i= 0;
 	@Action(value = "getToken")
 	public String getToken() {
@@ -60,9 +58,9 @@ public class UserAction extends JSONAction {
 //		m.put("roomId", "210401");
 //		String secretKey = DigestUtils.md5Hex("210401333333877de5d784344ba19b6694930c66a570");
 
-        m.put("password", "123123");
-        m.put("roomId", "212600");
-        String secretKey = DigestUtils.md5Hex("212600123123a11617e9fb20430b8f0f6785d462da18");
+        m.put("password", "333333");
+        m.put("roomId", "210944");
+        String secretKey = DigestUtils.md5Hex("210944333333eaa6da7a910e422e8279677470a1eb9f");
 
 
 
@@ -103,8 +101,9 @@ public class UserAction extends JSONAction {
 	@Action(value = "login")
 	public String login() {
 		Map<String, Object> session = getSession();
-		BaseResp resp = userService.login(username, password, session);
-		setData(resp);
+        BaseResp resp = userService.login(username, password, session);
+        setData(resp);
+
 		return RETURN_JSON;
 	}
 
@@ -140,17 +139,35 @@ public class UserAction extends JSONAction {
 		
 	    return RETURN_JSON;
 	}
-	
-	
-	@Action(value = "resetPwd")
-	public String resetPwd() {
-	    Map<String, Object> session = getSession();
-	    
-	    BaseResp resp = userService.resetPassword(tel, verifyCode, password, session);
-	    setData(resp);
-		
-	    return RETURN_JSON;
-	}
+
+
+    @Action(value = "resetPwd")
+    public String resetPwd() {
+        Map<String, Object> session = getSession();
+
+        BaseResp resp = userService.resetPassword(tel, verifyCode, password, session);
+        setData(resp);
+
+        return RETURN_JSON;
+    }
+
+    @Action(value = "bindUserCompany", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+    public String bindUserCompany() {
+        bind.setUserId(getLoginUser().getId());
+        BaseResp resp = userService.setUserCompanyBind(bind);
+        setData(resp);
+
+        return RETURN_JSON;
+    }
+
+    @Action(value = "getUserCompanyByCompany", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+    public String getUserCompanyByCompany() {
+
+        BaseResp resp = userService.getUserCompanyBinds(bind.getCompanyId(), page);
+        setData(resp);
+
+        return RETURN_JSON;
+    }
 
 	@Action(value = "registCompanyUser")
 	public String registCompanyUser() {
@@ -337,5 +354,13 @@ public class UserAction extends JSONAction {
 
     public void setPage(Page page) {
         this.page = page;
+    }
+
+    public UserCompanyBind getBind() {
+        return bind;
+    }
+
+    public void setBind(UserCompanyBind bind) {
+        this.bind = bind;
     }
 }

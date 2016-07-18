@@ -10,6 +10,8 @@ public interface CategoryService extends Constants {
 	BaseResp getCategorieById(int id);
 
 	BaseResp getCategories(Page page);
+
+	BaseResp getCategories(Page page, Integer companyId);
 	
 	BaseResp getCategoriesByType(Integer type, Page page);
 	
@@ -20,10 +22,12 @@ public interface CategoryService extends Constants {
 	BaseResp getItemByShipId(int shipId);
 	
 	public BaseResp getAdsProduct();
+    BaseResp getAdsProduct(Integer companyId);
 	
 	public BaseResp getAdsCompany();
 	
 	public BaseResp getZones(Integer count);
+    BaseResp getZones(Integer count, Integer companyId);
 	
 	
 	public BaseResp addRelationship(CategoryRelationship ship);

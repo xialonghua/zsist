@@ -5,12 +5,14 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
 
+import com.alipay.api.response.AlipayTradeCreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.jiafang.dao.UserDao;
 import com.jiafang.model.*;
 import com.jiafang.service.Page;
 import com.jiafang.service.bean.PayInfo;
 import com.jiafang.util.AliPayUtils;
+import com.jiafang.util.Config;
 import com.jiafang.util.PushUtil;
 import com.jiafang.util.StringUtil;
 import com.jiafang.util.weixin.com.tenpay.ClientRequestHandler;
@@ -244,7 +246,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp pay(Integer userId, Integer orderId, Integer payType) {
+    public BaseResp pay(Integer userId, Integer orderId, Integer payType, String payAccount) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         Order order = orderDao.getOrder(userId, orderId);
@@ -278,11 +280,31 @@ public class OrderServiceImpl implements OrderService {
             resp.setCode(ORDER_ALREADY_PAY);
             return resp;
         }
-        StringBuffer sb = new StringBuffer();
-        //TODO 创建订单
+//        if (order.getPayType() != null){
+//            resp.setCode(SUCCESS);
+//            resp.setData(order);
+//            return resp;
+//        }
         PayInfo info = new PayInfo();
         info.setPayType(payType);
         if (payType == PAY_ALI) {
+//            AlipayTradeCreateResponse response = AliPayUtils.create(payAccount, order.getOrderNum(), order.getExtraInfo(), 0.01);
+//            if (response == null){
+//                resp.setCode(SYSTEM_ERROR);
+//                return resp;
+//            }
+//            String tradeNo = response.getTradeNo();
+//            if (!StringUtils.isEmpty(tradeNo)){
+//                order.setPayAccount(payAccount);
+//                order.setPayNum(response.getTradeNo());
+//                order.setPayType(PAY_ALI);
+//
+//                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+//                resp.setCode(SUCCESS);
+//                resp.setData(order);
+//                return resp;
+//            }
+
             resp.setCode(PAY_UNKOWN_TYPE);
             return resp;
         } else if (payType == PAY_WEIXIN){
@@ -305,8 +327,8 @@ public class OrderServiceImpl implements OrderService {
             prepayReqHandler.setParameter("out_trade_no", order.getOrderNum());
             BigDecimal   b   =   new   BigDecimal(order.getTotalPrice());
             prepayReqHandler.setParameter("total_fee", "1");
-            prepayReqHandler.setParameter("spbill_create_ip", "180.173.10.80");//ServletActionContext.getRequest().getRemoteAddr());
-            prepayReqHandler.setParameter("notify_url", "http://180.173.10.80:22900/zsist/order/wechatPayCallback");
+            prepayReqHandler.setParameter("spbill_create_ip", "112.124.39.147");//ServletActionContext.getRequest().getRemoteAddr());
+            prepayReqHandler.setParameter("notify_url", "https://112.124.39.147:8443" + Config.getBaseUrl() + "order/wechatPayCallback");
             prepayReqHandler.setParameter("trade_type", "APP");
 
 
@@ -337,6 +359,23 @@ public class OrderServiceImpl implements OrderService {
                 map1.put("wechatResult", map);
 
                 resp.setData(map1);
+
+//                order.setPayAccount();
+                order.setPayType(PAY_WEIXIN);
+                order.setPayNum(id);
+
+                orderDao.updateOrderStatus(order.getUserId(), order.getId(), order.getOrderState());
+                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+                User buyer = userDao.queryByUserId(order.getUserId());
+                String nickname = "";
+                if (buyer == null){
+                    nickname = "";
+                }else {
+                    nickname = buyer.getNickname();
+                }
+
+
+                PushUtil.payOrder(order.getSellerId(), order.getId(), nickname);
                 resp.setCode(SUCCESS);
                 return resp;
             }else {
@@ -351,7 +390,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp queryPayStatus(User user, Integer orderId, String payNum, String aliResult) {
+    public BaseResp queryStatus(User user, Integer orderId, Integer payType) {
+        if (payType ==  PAY_WEIXIN){
+            return queryWeChatPayStatus(user, orderId);
+        }else if (payType ==  PAY_ALI){
+            return queryPayStatus(user, orderId);
+        }else {
+
+        }
+        BaseResp resp = new BaseResp();
+        resp.setCode(INVALIDAT_REQUEST);
+        return resp;
+    }
+
+    @Override
+    public BaseResp queryPayStatus(User user, Integer orderId) {
         BaseResp resp = new BaseResp();
 
         Integer userId = user.getId();
@@ -367,24 +420,18 @@ public class OrderServiceImpl implements OrderService {
             resp.setData(order);
             return resp;
         }else {
-            Map<String, String> params = StringUtil.parseParam(aliResult);
-            //TODO check sign
-            String orderNum = params.get("out_trade_no");
-            if (!order.getOrderNum().equals(orderNum)){
-                resp.setCode(INVALIDAT_REQUEST);
-                return resp;
-            }
-            AlipayTradeQueryResponse response = AliPayUtils.query(orderNum);
+
+            AlipayTradeQueryResponse response = AliPayUtils.query(order.getOrderNum());
             if (response == null){
                 resp.setCode(SYSTEM_ERROR);
                 return resp;
             }
             String tradeStatus = response.getTradeStatus();
             if (tradeStatus.equals("TRADE_SUCCESS")){
-                order.setPayNum(response.getTradeNo());
                 order.setPayAccount(response.getBuyerUserId());
-                order.setPayType(PAY_ALI);
+                order.setPayNum(response.getTradeNo());
                 order.setPayTime(System.currentTimeMillis());
+                order.setPayType(PAY_ALI);
                 order.setOrderState(OrderState.已付款.ordinal());
 
                 orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
@@ -399,6 +446,86 @@ public class OrderServiceImpl implements OrderService {
         resp.setCode(SUCCESS);
         resp.setData(order);
         return resp;
+    }
+
+    @Override
+    public BaseResp queryWeChatPayStatus(User user, Integer orderId) {
+        BaseResp resp = new BaseResp();
+
+        Integer userId = user.getId();
+
+        Order order = orderDao.getOrder(userId, orderId);
+        if (order == null) {
+            resp.setCode(ORDER_NOT_FOUND);
+            return resp;
+        }
+
+        if (order.getOrderState() != OrderState.未付款.ordinal()){
+            resp.setCode(SUCCESS);
+            resp.setData(order);
+            return resp;
+        }else {
+            PrepayIdRequestHandler prepayReqHandler = new PrepayIdRequestHandler(ServletActionContext.getRequest(), ServletActionContext.getResponse());//获取prepayid的请求类
+            ClientRequestHandler clientHandler = new ClientRequestHandler(ServletActionContext.getRequest(), ServletActionContext.getResponse());//返回客户端支付参数的请求类
+
+            int retcode;
+            String retmsg = "";
+            String xml_body = "";
+            //获取token值
+            String noncestr = WXUtil.getNonceStr();
+            String timestamp = WXUtil.getTimeStamp();
+            String traceid = "";
+            ////设置获取prepayid支付参数
+            prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
+            prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);
+            prepayReqHandler.setParameter("nonce_str", noncestr);
+            prepayReqHandler.setParameter("out_trade_no", order.getOrderNum());
+
+            //生成获取预支付签名
+            String sign = prepayReqHandler.createMD5();
+            //增加非参与签名的额外参数
+            prepayReqHandler.setParameter("sign", sign);
+            String gateUrl = "https://api.mch.weixin.qq.com/pay/orderquery";
+            prepayReqHandler.setGateUrl(gateUrl);
+
+            //获取prepayId
+            String prepayid = null;
+            Map<String, String> map = null;
+            try {
+                prepayid = prepayReqHandler.sendPrepay();
+                map = XMLUtil.doXMLParse(prepayid);
+            } catch (Exception e) {
+                e.printStackTrace();
+                resp.setCode(SYSTEM_ERROR);
+                return resp;
+            }
+            String code = map.get("return_code");
+            if ("SUCCESS".equals(code)){
+
+                String state = map.get("trade_state");
+
+                if ("SUCCESS".equals(state)) {
+                    order.setPayAccount(map.get("openid"));
+                    order.setPayNum(map.get("transaction_id"));
+                    order.setPayTime(System.currentTimeMillis());
+                    order.setPayType(PAY_WEIXIN);
+                    order.setOrderState(OrderState.已付款.ordinal());
+
+                    orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
+                    orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+                    PushUtil.payOrder(order.getSellerId(), order.getId(), user.getNickname());
+                    resp.setCode(SUCCESS);
+                    resp.setData(order);
+                    return resp;
+                }
+                resp.setCode(SUCCESS);
+                resp.setData(order);
+                return resp;
+            }else {
+                resp.setCode(PAY_DISCONNECT);
+                return resp;
+            }
+        }
     }
 
     @Override
@@ -692,7 +819,44 @@ public class OrderServiceImpl implements OrderService {
             while((readBytes = inputStream.read(buffer)) > 0){
                 stringBuilder.append(new String(buffer, 0, readBytes));
             }
-            System.out.println(stringBuilder.toString());
+            BaseResp resp = new BaseResp();
+
+            Map<String, String> map = null;
+            try {
+                map = XMLUtil.doXMLParse(stringBuilder.toString());
+            } catch (JDOMException e) {
+                e.printStackTrace();
+                return "SUCCESS";
+            }
+            Order order = orderDao.getOrder(map.get("out_trade_no"));
+            if (order == null){
+                return "SUCCESS";
+            }
+            if (order.getOrderState() != OrderState.未付款.ordinal()){
+                return "SUCCESS";
+            }
+            String state = map.get("result_code");
+
+            if ("SUCCESS".equals(state)) {
+                order.setPayAccount(map.get("openid"));
+                order.setPayNum(map.get("transaction_id"));
+                order.setPayTime(System.currentTimeMillis());
+                order.setOrderState(OrderState.已付款.ordinal());
+
+                orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
+                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+
+                User buyer = userDao.queryByUserId(order.getUserId());
+                String nickname = "";
+                if (buyer == null){
+                    nickname = "";
+                }else {
+                    nickname = buyer.getNickname();
+                }
+                PushUtil.payOrder(order.getSellerId(), order.getId(), nickname);
+                return "SUCCESS";
+            }
+            return "SUCCESS";
         } catch (IOException e) {
             e.printStackTrace();
         }

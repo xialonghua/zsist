@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.jiafang.action.JSONAction;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,26 +60,32 @@ public class CompanyAction extends JSONAction {
 		setData(companyService.updateCompany(company));
 		return RETURN_JSON;
 	}
-	
-	@Action(value = "modifyCompany")
+
+	@Action(value = "modifyCompany", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyCompany() {
 		setData(companyService.updateCompany(company));
 		return RETURN_JSON;
 	}
+
+	@Action(value = "modifyCompanyWechatAlipayAccount", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+	public String modifyCompanyWechatAlipayAccount() {
+		setData(companyService.updateCompanyWechatAlipayAccount(company));
+		return RETURN_JSON;
+	}
 	
-	@Action(value = "addCompanyPic")
+	@Action(value = "addCompanyPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addCompanyPic() {
 		setData(companyService.addPic(pic));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifyCompanyPic")
+	@Action(value = "modifyCompanyPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyCompanyPic() {
 		setData(companyService.updatePic(pic));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteCompanyPic")
+	@Action(value = "deleteCompanyPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteCompanyPic() {
 		setData(companyService.deletePic(pic));
 		return RETURN_JSON;

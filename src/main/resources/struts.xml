@@ -32,15 +32,21 @@
 		<interceptors>
 			<interceptor name="loginInteceptor2" class="com.jiafang.filter.LoginInterceptor" />
 			<interceptor name="loginInteceptor3" class="com.jiafang.filter.AdminInterceptor" />
+			<interceptor name="loginInteceptor4" class="com.jiafang.filter.CompanyInterceptor" />
 
 			<interceptor-stack name="loginInteceptor">
 				<interceptor-ref name="loginInteceptor2" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			<interceptor-stack name="adminLoginInteceptor">
-                <interceptor-ref name="defaultStack" />
-                <interceptor-ref name="loginInteceptor2" />
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="loginInteceptor2" />
 				<interceptor-ref name="loginInteceptor3" />
+			</interceptor-stack>
+			<interceptor-stack name="companyLoginInteceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="loginInteceptor2" />
+				<interceptor-ref name="loginInteceptor4" />
 			</interceptor-stack>
 		</interceptors>
 	</package>

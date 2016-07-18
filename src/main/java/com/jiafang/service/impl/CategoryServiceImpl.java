@@ -44,12 +44,20 @@ public class CategoryServiceImpl implements CategoryService{
 		resp.setData(categoryDao.queryById(id));
 		return resp;
 	}
-	
+
 	@Override
 	public BaseResp getCategories(Page page) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
 		resp.setData(categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999)));
+		return resp;
+	}
+
+	@Override
+	public BaseResp getCategories(Page page, Integer companyId) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		resp.setData(categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999), companyId));
 		return resp;
 	}
 	
@@ -74,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService{
 		resp.setCode(SUCCESS);
 		return resp;
 	}
-	
+
 	@Override
 	public BaseResp getZones(Integer count) {
 		List<Category> cats = categoryDao.queryByType(CategoryType.ZONE.ordinal(), new Page(0, 9999));
@@ -104,7 +112,46 @@ public class CategoryServiceImpl implements CategoryService{
 					catable.add(c);
 				}
 			}
-			
+
+			ad.setItems(catable);
+			ads.add(ad);
+		}
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		resp.setData(ads);
+		return resp;
+	}
+
+	@Override
+	public BaseResp getZones(Integer count, Integer companyId) {
+		List<Category> cats = categoryDao.queryByType(CategoryType.ZONE.ordinal(), new Page(0, 9999));
+		List<Ad> ads = new ArrayList<Ad>();
+		if(count == null){
+			count = 4;
+		}
+		for(Category cat : cats){
+			Ad ad = new Ad();
+			ad.setCategory(cat);
+			List<Categoryable> catable = new ArrayList<Categoryable>();
+			List<CategoryRelationship> ships = categoryDao.queryRelationshipByCatrgoryId(new Page(0, count), cat.getId(), companyId);
+			for(CategoryRelationship ship : ships){
+				if(ship.getProductId() != null){
+					Product p = productDao.queryById(ship.getProductId());
+					p.setCategoryShips(categoryDao.queryRelationshipsByProductId(p.getId()));
+					ship.setAvatar(p.getAvatar());
+					ship.setVideo(p.getVideo());
+					p.setCategoryShip(ship);
+					catable.add(p);
+				}else if(ship.getCompanyId() != null){
+					Company c = companyDao.queryById(ship.getCompanyId());
+					c.setCategoryShips(categoryDao.queryRelationshipsByCompanyId(c.getId()));
+					ship.setAvatar(c.getAvatar());
+					ship.setVideo(c.getVideo());
+					c.setCategoryShip(ship);
+					catable.add(c);
+				}
+			}
+
 			ad.setItems(catable);
 			ads.add(ad);
 		}
@@ -116,20 +163,10 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public BaseResp getAdsProduct() {
-		
-//		List<Pic> pics = productDao.queryAllPicsByType(1);
-//		for(Pic p : pics){
-//			SubProduct subProduct = new SubProduct();
-//			subProduct.setAvatar(p.getUrl());
-//			subProduct.setVideo(p.getVideo());
-//			subProduct.setName(p.getName());
-//			subProduct.setProductId(p.getProductId());
-//			productDao.saveSubProduct(subProduct);
-//		}
-		
+
 		List<Category> cats = categoryDao.queryByType(CategoryType.AD_PRODUCT.ordinal(), new Page(0, 9999));
 		List<Ad> ads = new ArrayList<Ad>();
-		
+
 		for(Category cat : cats){
 			Ad ad = new Ad();
 			ad.setCategory(cat);
@@ -139,10 +176,10 @@ public class CategoryServiceImpl implements CategoryService{
 				if(ship.getProductId() != null){
 					Product p = productDao.queryById(ship.getProductId());
 					p.setCategoryShips(categoryDao.queryRelationshipsByProductId(p.getId()));
-					
+
 					ship.setAvatar(p.getAvatar());
 					ship.setVideo(p.getVideo());
-					
+
 					p.setCategoryShip(ship);
 					catable.add(p);
 				}else if(ship.getCompanyId() != null){
@@ -150,12 +187,53 @@ public class CategoryServiceImpl implements CategoryService{
 					c.setCategoryShips(categoryDao.queryRelationshipsByCompanyId(c.getId()));
 					ship.setAvatar(c.getAvatar());
 					ship.setVideo(c.getVideo());
-					
+
 					c.setCategoryShip(ship);
 					catable.add(c);
 				}
 			}
-			
+
+			ad.setItems(catable);
+			ads.add(ad);
+		}
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		resp.setData(ads);
+		return resp;
+	}
+
+	@Override
+	public BaseResp getAdsProduct(Integer companyId) {
+
+		List<Category> cats = categoryDao.queryByType(CategoryType.AD_PRODUCT.ordinal(), new Page(0, 9999));
+		List<Ad> ads = new ArrayList<Ad>();
+
+		for(Category cat : cats){
+			Ad ad = new Ad();
+			ad.setCategory(cat);
+			List<Categoryable> catable = new ArrayList<Categoryable>();
+			List<CategoryRelationship> ships = categoryDao.queryRelationshipByCatrgoryId(new Page(0, 999), cat.getId(), companyId);
+			for(CategoryRelationship ship : ships){
+				if(ship.getProductId() != null){
+					Product p = productDao.queryById(ship.getProductId());
+					p.setCategoryShips(categoryDao.queryRelationshipsByProductId(p.getId()));
+
+					ship.setAvatar(p.getAvatar());
+					ship.setVideo(p.getVideo());
+
+					p.setCategoryShip(ship);
+					catable.add(p);
+				}else if(ship.getCompanyId() != null){
+					Company c = companyDao.queryById(ship.getCompanyId());
+					c.setCategoryShips(categoryDao.queryRelationshipsByCompanyId(c.getId()));
+					ship.setAvatar(c.getAvatar());
+					ship.setVideo(c.getVideo());
+
+					c.setCategoryShip(ship);
+					catable.add(c);
+				}
+			}
+
 			ad.setItems(catable);
 			ads.add(ad);
 		}

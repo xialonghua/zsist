@@ -68,20 +68,26 @@ public class PrepayIdRequestHandler extends RequestHandler {
 
 	// �ύԤ֧��
 	public String sendPrepay() throws JSONException {
-		String prepayid = "";
 		String params = getXmlBody();
 
 		String requestUrl = super.getGateUrl();
 		this.setDebugInfo(this.getDebugInfo() + "\r\n" + "requestUrl:"
 				+ requestUrl);
-		TenpayHttpClient httpClient = new TenpayHttpClient();
-		httpClient.setReqContent(requestUrl);
-		String resContent = "";
-		this.setDebugInfo(this.getDebugInfo() + "\r\n" + "post data:" + params);
-		if (httpClient.callHttpPost(requestUrl, params)) {
-			resContent = httpClient.getResContent();
+
+		int i = 5;
+		while (i > 0){
+			i--;
+			TenpayHttpClient httpClient = new TenpayHttpClient();
+			httpClient.setReqContent(requestUrl);
+			String resContent = "";
+			this.setDebugInfo(this.getDebugInfo() + "\r\n" + "post data:" + params);
+			if (httpClient.callHttpPost(requestUrl, params)) {
+				resContent = httpClient.getResContent();
+				return resContent;
+			}
+
 		}
-        return resContent;
+		return null;
 	}
 
 }

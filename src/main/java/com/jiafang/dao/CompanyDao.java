@@ -24,6 +24,7 @@ public interface CompanyDao {
 	public Company queryByUserId(Integer UserId);
 	
 	public Company updateCompany(Company company);
+	Company updateCompanyWechatAlipayAccount(Company company);
 	
 	public Pic savePic(Pic pic);
 	

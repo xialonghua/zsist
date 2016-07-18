@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public User queryByUsername(String username, String tel) {
-		
+
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(User.class)
 				.add(Restrictions.or(Restrictions.eq("username", username), Restrictions.eq("tel", tel)));
 		return (User) query.uniqueResult();
@@ -65,6 +65,34 @@ public class UserDaoImpl implements UserDao{
 		sessionFactory.getCurrentSession().save(user);
 		return user;
 	}
+
+	@Override
+	public UserCompanyBind saveUserCompanyBind(UserCompanyBind userBind) {
+		sessionFactory.getCurrentSession().save(userBind);
+		return userBind;
+	}
+
+    @Override
+    public UserCompanyBind queryUserCompanyBind(Integer userId, Integer companyId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(User.class)
+                .add(Restrictions.or(Restrictions.eq("userId", userId), Restrictions.eq("companyId", companyId)));
+        UserCompanyBind bind = (UserCompanyBind) query.uniqueResult();
+        return bind;
+    }
+
+    @Override
+    public List<UserCompanyBind> queryUserCompanyBinds(Integer companyId, Page page) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(UserCompanyBind.class)
+                .add(Restrictions.eq("companyId", companyId));
+        query.setFirstResult(page.getIndex());
+        query.setMaxResults(page.getPageSize());
+
+        List<UserCompanyBind> list = query.list();
+        query = sessionFactory.getCurrentSession().createCriteria(UserCompanyBind.class);
+        query.setProjection(Projections.rowCount());
+        page.setTotal(Integer.parseInt(query.uniqueResult().toString()));
+        return list;
+    }
 
 	@Override
 	public User updateUserPwd(String tel, String password) {
@@ -136,11 +164,23 @@ public class UserDaoImpl implements UserDao{
 		if(address.getUserId() == null){
 			throw new NullPointerException();
 		}
+		Integer isDefault = address.getIsDefault();
         Session session = sessionFactory.getCurrentSession();
+		address.setIsDefault(null);
         session.beginTransaction();
-        session.saveOrUpdate(address);
+        if (address.getId() == null){
+            session.save(address);
+        }else {
+            session.update(address);
+        }
+
+
         session.flush();
         session.getTransaction().commit();
+		if (isDefault != null && isDefault == 1){
+			address.setIsDefault(1);
+			setDefaultAddress(address.getId(), address.getUserId());
+		}
 		return address;
 	}
 

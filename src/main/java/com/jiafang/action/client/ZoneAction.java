@@ -1,6 +1,7 @@
 package com.jiafang.action.client;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -19,10 +20,17 @@ public class ZoneAction extends JSONAction {
 	private Page page;
 	
 	private Integer count;
+
+	private Company company;
 	
 	@Action(value = "getZones")
 	public String getZones() {
-		setData(categoryService.getZones(count));
+		if (company == null){
+			setData(categoryService.getZones(count));
+		}else {
+			setData(categoryService.getZones(count, company.getId()));
+		}
+
 		return RETURN_JSON;
 	}
 
@@ -42,4 +50,11 @@ public class ZoneAction extends JSONAction {
 		this.count = count;
 	}
 
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 }

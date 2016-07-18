@@ -9,14 +9,16 @@ import com.jiafang.service.Page;
 public interface CategoryDao {
 
 	public List<Category> query(Page page);
-	
+
 	public List<Category> queryByType(Integer type, Page page);
+	public List<Category> queryByType(Integer type, Page page, Integer companyId);
 	
 	public Category queryById(int id);
 	
 	public CategoryRelationship queryRelationshipByShipId(Integer shipId);
 	
 	public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId);
+    List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId, Integer companyId);
 	
 	public List<CategoryRelationship> queryRelationshipsByProductId(Integer productId);
 	

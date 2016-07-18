@@ -161,19 +161,39 @@ public class OrderAction extends JSONAction {
 
 		User user = (User) session.get("user");
 
-		setData(orderService.pay(user.getId(), order.getId(), order.getPayType()));
+		setData(orderService.pay(user.getId(), order.getId(), order.getPayType(), order.getPayAccount()));
 		return RETURN_JSON;
 	}
 
-	@Action(value = "queryPayStatus", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
-	public String queryPayStatus() {
-		Map<String, Object> session = getSession();
+    @Action(value = "queryStatus", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+    public String queryStatus() {
+        Map<String, Object> session = getSession();
 
-		User user = (User) session.get("user");
+        User user = (User) session.get("user");
 
-		setData(orderService.queryPayStatus(user, order.getId(), order.getPayNum(), aliResult));
-		return RETURN_JSON;
-	}
+        setData(orderService.queryStatus(user, order.getId(), order.getPayType()));
+        return RETURN_JSON;
+    }
+
+    @Action(value = "queryPayStatus", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+    public String queryPayStatus() {
+        Map<String, Object> session = getSession();
+
+        User user = (User) session.get("user");
+
+        setData(orderService.queryPayStatus(user, order.getId()));
+        return RETURN_JSON;
+    }
+
+    @Action(value = "queryWeChatPayStatus", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+    public String queryWeChatPayStatus() {
+        Map<String, Object> session = getSession();
+
+        User user = (User) session.get("user");
+
+        setData(orderService.queryWeChatPayStatus(user, order.getId()));
+        return RETURN_JSON;
+    }
 
 	@Action(value = "aliPayCallback", results = { @Result(name = "SUCCESS", location = "/success.html") })
 	public String aliPayCallback() {

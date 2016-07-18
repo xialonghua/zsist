@@ -13,7 +13,8 @@ public interface ProductDao {
 	public List<Pic> queryAllPicsByType(Integer type);
 
 	public List<Product> queryByCatrgoryId(Page page, Integer categoryId);
-	
+	public List<Product> queryByCatrgoryId(Page page, Integer categoryId, Integer comapnyId);
+
 	public List<Product> queryByCompanyId(Page page, Integer companyId);
 	
 	public Product queryById(Integer productId);

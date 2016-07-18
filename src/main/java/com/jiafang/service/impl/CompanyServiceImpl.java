@@ -57,6 +57,14 @@ public class CompanyServiceImpl implements CompanyService{
 	}
 
 	@Override
+	public BaseResp updateCompanyWechatAlipayAccount(Company company) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		resp.setData(companyDao.updateCompanyWechatAlipayAccount(company));
+		return resp;
+	}
+
+	@Override
 	public BaseResp addPic(Pic pic) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);

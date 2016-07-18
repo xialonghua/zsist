@@ -18,7 +18,13 @@ public interface UserDao {
 	public void updateUserInfo(Integer userId, String nickname, String avatar);
 	
 	public User saveUser(User user);
-	
+
+	UserCompanyBind saveUserCompanyBind(UserCompanyBind user);
+
+	public UserCompanyBind queryUserCompanyBind(Integer userId, Integer companyId);
+
+    List<UserCompanyBind> queryUserCompanyBinds(Integer companyId, Page page);
+
 	public User updateUserPwd(Integer userId, String password);
 	
 	public User updateUserPwd(String tel, String password);

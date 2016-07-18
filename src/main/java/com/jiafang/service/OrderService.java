@@ -13,9 +13,11 @@ public interface OrderService extends Constants{
 
 	BaseResp cancelOrder(User user, Integer orderId);
 
-    BaseResp pay(Integer userId, Integer orderId, Integer payType);
+    BaseResp pay(Integer userId, Integer orderId, Integer payType, String payAccount);
 
-    BaseResp queryPayStatus(User user, Integer orderId, String payNum, String aliResult);
+    BaseResp queryStatus(User user, Integer orderId, Integer payType);
+    BaseResp queryPayStatus(User user, Integer orderId);
+    BaseResp queryWeChatPayStatus(User user, Integer orderId);
 
     BaseResp getOrders(Integer userId, Integer orderStatus, Page page);
     BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page);

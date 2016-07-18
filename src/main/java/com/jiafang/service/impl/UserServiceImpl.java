@@ -1,8 +1,10 @@
 package com.jiafang.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.jiafang.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +13,6 @@ import com.jiafang.action.resp.BaseResp;
 import com.jiafang.dao.CompanyDao;
 import com.jiafang.dao.ProductDao;
 import com.jiafang.dao.UserDao;
-import com.jiafang.model.Address;
-import com.jiafang.model.Company;
-import com.jiafang.model.Product;
-import com.jiafang.model.User;
-import com.jiafang.model.UserLevel;
-import com.jiafang.model.VerifyCodeType;
 import com.jiafang.service.Page;
 import com.jiafang.service.UserService;
 import com.jiafang.util.IMUtil;
@@ -318,7 +314,42 @@ public class UserServiceImpl implements UserService {
 		return resp;
 	}
 
-	@Override
+    @Override
+    public BaseResp setUserCompanyBind(UserCompanyBind bind) {
+        BaseResp resp = new BaseResp();
+        resp.setCode(SUCCESS);
+        if(userDao.queryUserCompanyBind(bind.getUserId(), bind.getCompanyId()) == null){
+            userDao.saveUserCompanyBind(bind);
+        }
+        return resp;
+    }
+
+    @Override
+    public BaseResp getUserCompanyBinds(Integer companyId, Page page) {
+        BaseResp resp = new BaseResp();
+        resp.setCode(SUCCESS);
+        List<UserCompanyBind> users = userDao.queryUserCompanyBinds(companyId, page);
+
+        List<User> user = new ArrayList<>();
+
+        for (UserCompanyBind bind : users){
+            User user1 = new User();
+            User u = userDao.queryByUserId(bind.getUserId());
+            if (u == null){
+                continue;
+            }
+            user1.setTel(u.getTel());
+            user1.setId(u.getId());
+            user1.setAvatar(u.getAvatar());
+            user1.setNickname(u.getNickname());
+            user.add(user1);
+        }
+        resp.setData(user);
+        resp.setPage(page);
+        return resp;
+    }
+
+    @Override
     public BaseResp getUserTags(Integer userId) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);

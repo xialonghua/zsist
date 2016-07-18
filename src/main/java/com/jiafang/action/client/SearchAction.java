@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.jiafang.service.Page;
 import com.jiafang.service.ProductService;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @ParentPackage("basePackage")
 @Namespace("/search")
 public class SearchAction extends JSONAction {
@@ -77,5 +79,26 @@ public class SearchAction extends JSONAction {
 		this.companyId = companyId;
 	}
 
+
+	public static void main(String[] a){
+        final AtomicInteger ii = new AtomicInteger(0);
+		for (int i = 122;i < 337;i++){
+            final int iii = i;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					String url = "http://media.livevip.com.cn/live-share/c7250d7fb77000017eb4c0f01e54155d_" + iii + ".jpg";
+					ApiCall.get(url, null);
+
+                    ii.incrementAndGet();
+                    System.out.println("==" + ii.get());
+				}
+			}).start();
+
+		}
+
+
+	}
 	
 }

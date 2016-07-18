@@ -41,6 +41,15 @@ public class ProductServiceImpl implements ProductService{
 		return resp;
 	}
 
+	@Override
+	public BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		List<Product> products = productDao.queryByCatrgoryId(page, categoryId, companyId);
+		resp.setData(products);
+		return resp;
+	}
+
 
 	@Override
 	public BaseResp searchProducts(Page page, String name) {

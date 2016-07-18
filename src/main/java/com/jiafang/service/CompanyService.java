@@ -12,8 +12,9 @@ public interface CompanyService extends Constants{
 	BaseResp getCompanyById(Integer companyId);
 	
 	BaseResp getCompanyByUserId(Integer userId);
-	
+
 	BaseResp updateCompany(Company company);
+	BaseResp updateCompanyWechatAlipayAccount(Company company);
 	
 	BaseResp addPic(Pic pic);
 	

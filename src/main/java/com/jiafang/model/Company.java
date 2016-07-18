@@ -51,6 +51,9 @@ public class Company extends BaseTime implements java.io.Serializable,Categoryab
 	private List<Brand> brands;
 	
 	private Date picUpdateTime;
+
+	private String wechatAccount;
+	private String alipayAccount;
 	
 	public Company() {
 	}
@@ -306,5 +309,21 @@ public class Company extends BaseTime implements java.io.Serializable,Categoryab
 
 	public void setArea(String area) {
 		this.area = area;
+	}
+
+	public String getWechatAccount() {
+		return wechatAccount;
+	}
+
+	public void setWechatAccount(String wechatAccount) {
+		this.wechatAccount = wechatAccount;
+	}
+
+	public String getAlipayAccount() {
+		return alipayAccount;
+	}
+
+	public void setAlipayAccount(String alipayAccount) {
+		this.alipayAccount = alipayAccount;
 	}
 }

@@ -157,7 +157,9 @@ public class CompanyDaoImpl implements CompanyDao{
 	    }else {
 	    	temp.setVideo(company.getVideo());
 	    }
-	    
+
+		temp.setWechatAccount(company.getWechatAccount());
+		temp.setAlipayAccount(temp.getAlipayAccount());
 	    temp.setAddress(company.getAddress());
 	    session.flush();
 	    session.saveOrUpdate(temp);
@@ -168,8 +170,22 @@ public class CompanyDaoImpl implements CompanyDao{
 		//sessionFactory.getCurrentSession().update(company);
 		return company;
 	}
-	
-	
+
+	@Override
+	public Company updateCompanyWechatAlipayAccount(Company company) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		Criteria query = session.createCriteria(Company.class);
+		query.add(Restrictions.eq("id", company.getId()));
+		Company  temp = (Company) query.uniqueResult();
+		temp.setWechatAccount(company.getWechatAccount());
+		temp.setAlipayAccount(temp.getAlipayAccount());
+		session.flush();
+		session.saveOrUpdate(temp);
+		return company;
+	}
+
+
 	@Override
 	public Company queryByUserId(Integer userId) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(Company.class);

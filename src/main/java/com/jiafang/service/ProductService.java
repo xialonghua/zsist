@@ -12,6 +12,7 @@ import com.jiafang.model.SubProduct;
 public interface ProductService extends Constants{
 
 	BaseResp getProductsByCategory(Page page, Integer categoryId);
+	BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId);
 	
 	BaseResp getProductsByCompanyId(Page page, Integer companyId);
 	

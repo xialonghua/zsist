@@ -33,15 +33,24 @@ public class CategoryDaoImpl implements CategoryDao{
 		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		return query.list();
 	}
-	
-	@Override
-	public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId) {
-		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
-		query.add(Restrictions.eq("categoryId", categoryId));
-		query.addOrder(Order.desc("weight"));
-		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
-		return query.list();
-	}
+
+    @Override
+    public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+        query.add(Restrictions.eq("categoryId", categoryId));
+        query.addOrder(Order.desc("weight"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
+    }
+
+    @Override
+    public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId, Integer companyId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+        query.add(Restrictions.and(Restrictions.eq("categoryId", categoryId), Restrictions.eq("companyId", companyId)));
+        query.addOrder(Order.desc("weight"));
+        query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+        return query.list();
+    }
 	
 	@Override
 	public CategoryRelationship queryRelationshipByShipId(Integer shipId) {
@@ -55,6 +64,18 @@ public class CategoryDaoImpl implements CategoryDao{
 		Session session = sessionFactory.getCurrentSession();
 		Criteria query = session.createCriteria(Category.class);
 		if(type!=null){
+			query.add(Restrictions.eq("type", type));
+		}
+		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		return query.list();
+	}
+
+	@Override
+	public List<Category> queryByType(Integer type, Page page, Integer companyId) {
+		//TODO 暂时返回一样的
+        Session session = sessionFactory.getCurrentSession();
+		Criteria query = session.createCriteria(Category.class);
+		if(type != null){
 			query.add(Restrictions.eq("type", type));
 		}
 		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());

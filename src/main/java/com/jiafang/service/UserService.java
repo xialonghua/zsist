@@ -4,10 +4,7 @@ import java.util.Map;
 
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
-import com.jiafang.model.Address;
-import com.jiafang.model.Company;
-import com.jiafang.model.User;
-import com.jiafang.model.VerifyCodeType;
+import com.jiafang.model.*;
 
 public interface UserService extends Constants{
 
@@ -16,6 +13,10 @@ public interface UserService extends Constants{
 	BaseResp getUserInfo(Integer userId);
 
 	BaseResp getUsers(Page page);
+
+	BaseResp setUserCompanyBind(UserCompanyBind bind);
+
+	BaseResp getUserCompanyBinds(Integer companyId, Page page);
 
 	BaseResp getUserTags(Integer userId);
 	

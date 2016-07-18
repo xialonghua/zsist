@@ -7,18 +7,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.*;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jiafang.action.resp.BaseResp;
-import com.jiafang.model.Param;
-import com.jiafang.model.Pic;
-import com.jiafang.model.Product;
-import com.jiafang.model.SubProduct;
-import com.jiafang.model.User;
 import com.jiafang.service.Page;
 import com.jiafang.service.ProductService;
 import com.opensymphony.xwork2.ActionContext;
@@ -44,6 +41,8 @@ public class ProductAction extends JSONAction {
 	private Param param;
 	private Pic pic;
 	private SubProduct subProduct;
+
+	private Company company;
 	
 	private List<Pic> pics;
 	
@@ -57,7 +56,12 @@ public class ProductAction extends JSONAction {
 	
 	@Action(value = "getProductsByCategory")
 	public String getProducts() {
-		setData(productService.getProductsByCategory(page, categoryId));
+		if (company == null){
+			setData(productService.getProductsByCategory(page, categoryId));
+		}else {
+			setData(productService.getProductsByCategory(page, categoryId, company.getId()));
+		}
+
 		return RETURN_JSON;
 	}
 	
@@ -87,55 +91,55 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addProduct")
+	@Action(value = "addProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.addProduct(product));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addSubProduct")
+	@Action(value = "addSubProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addSubProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.saveSubProduct(subProduct));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifyProduct")
+	@Action(value = "modifyProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.modifyProduct(product));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifySubProduct")
+	@Action(value = "modifySubProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifySubProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.updateSubProduct(subProduct));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteProduct")
+	@Action(value = "deleteProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.deleteProduct(product));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteSubProduct")
+	@Action(value = "deleteSubProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteSubProduct() {
 		//product.setName(StringUtil.encode(productName));
 		setData(productService.deleteSubProduct(subProduct));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addProductPic")
+	@Action(value = "addProductPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProductPic() {
 		setData(productService.addPic(pic));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addProductPics")
+	@Action(value = "addProductPics", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProductPics() {
 		HttpServletRequest request = ServletActionContext.getRequest();
         Integer productId = Integer.parseInt(request.getParameter("productId"));
@@ -154,13 +158,13 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifyProductPic")
+	@Action(value = "modifyProductPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProductPic() {
 		setData(productService.updatePic(pic));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifyProductPics")
+	@Action(value = "modifyProductPics", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProductPics() {
 		HttpServletRequest request = ServletActionContext.getRequest();
         String ids = request.getParameter("ids");
@@ -180,7 +184,7 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifySubProductNames")
+	@Action(value = "modifySubProductNames", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifySubProductNames() {
 		HttpServletRequest request = ServletActionContext.getRequest();
         String ids = request.getParameter("ids");
@@ -200,7 +204,7 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteProductPic")
+	@Action(value = "deleteProductPic", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteProductPic() {
 		setData(productService.deletePic(pic));
 		return RETURN_JSON;
@@ -212,19 +216,19 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addProductParam")
+	@Action(value = "addProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProductParam() {
 		setData(productService.addProductParam(param));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "modifyProductParam")
+	@Action(value = "modifyProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProductParam() {
 		setData(productService.updateProductParam(param));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteProductParam")
+	@Action(value = "deleteProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteProductParam() {
 		setData(productService.deleteProductParam(param));
 		return RETURN_JSON;
@@ -236,7 +240,7 @@ public class ProductAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "checkProductNum")
+	@Action(value = "checkProductNum", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String checkProductNum() {
 		setData(productService.getProdunctNumberCount(product.getNum()));
 		return RETURN_JSON;
@@ -337,5 +341,12 @@ public class ProductAction extends JSONAction {
 	public void setSubProduct(SubProduct subProduct) {
 		this.subProduct = subProduct;
 	}
-	
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 }

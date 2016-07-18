@@ -1,6 +1,7 @@
 package com.jiafang.action.client;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -26,10 +27,17 @@ public class CategoryAction extends JSONAction {
 	private CategoryRelationship ship;
 	private Category category;
 	private String productIds;
+
+	private Company company;
 	
 	@Action(value = "getCategories")
 	public String getCategories() {
-		setData(categoryService.getCategories(page));
+        if (company == null){
+            setData(categoryService.getCategories(page));
+        }else {
+            setData(categoryService.getCategories(page, company.getId()));
+        }
+
 		return RETURN_JSON;
 	}
 	
