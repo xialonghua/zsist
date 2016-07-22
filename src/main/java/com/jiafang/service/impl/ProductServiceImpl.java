@@ -2,6 +2,7 @@ package com.jiafang.service.impl;
 
 import java.util.List;
 
+import com.jiafang.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,13 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.dao.CategoryDao;
 import com.jiafang.dao.ProductDao;
-import com.jiafang.model.Category;
-import com.jiafang.model.CategoryRelationship;
-import com.jiafang.model.Company;
-import com.jiafang.model.Param;
-import com.jiafang.model.Pic;
-import com.jiafang.model.Product;
-import com.jiafang.model.SubProduct;
 import com.jiafang.service.Page;
 import com.jiafang.service.ProductService;
 import com.jiafang.dao.CompanyDao;
@@ -192,8 +186,16 @@ public class ProductServiceImpl implements ProductService{
 		List<Pic> pics = product.getPics();
 		List<Pic> descPics = product.getDescPics();
 		List<Param> params = product.getParams();
+		List<SubProduct> subProducts = product.getSubProduct();
 		List<CategoryRelationship> ships = categoryDao.queryRelationshipsByProductId(product.getId());
-		
+
+        for(SubProduct obj : subProducts){
+            for(ProductSize size : obj.getProductSizes()){
+                productDao.deleteProductSize(size);
+            }
+
+            productDao.deleteSubProduct(obj);
+        }
 		for(Pic obj : pics){
 			productDao.deletePic(obj);
 		}

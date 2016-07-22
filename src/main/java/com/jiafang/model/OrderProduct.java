@@ -15,6 +15,7 @@ public class OrderProduct extends BaseTime implements java.io.Serializable {
 
     private String orderNum;
     private Integer productId;
+    private Integer productSizeId;
     private Integer orderId;
 
     private Integer id;
@@ -113,4 +114,13 @@ public class OrderProduct extends BaseTime implements java.io.Serializable {
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
+
+    public Integer getProductSizeId() {
+        return productSizeId;
+    }
+
+    public void setProductSizeId(Integer productSizeId) {
+        this.productSizeId = productSizeId;
+    }
+
 }

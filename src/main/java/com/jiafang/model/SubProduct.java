@@ -3,6 +3,7 @@ package com.jiafang.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +27,8 @@ public class SubProduct extends BaseTime implements java.io.Serializable {
 	private String description;
 	private String num;
 	private Integer productId;
+
+	private List<ProductSize> productSizes;
 	
 	private String url;//等同于avatar，主要为了兼容老客户端
 	
@@ -158,5 +161,12 @@ public class SubProduct extends BaseTime implements java.io.Serializable {
 		this.url = url;
 	}
 
-	
+    @Transient
+    public List<ProductSize> getProductSizes() {
+        return productSizes;
+    }
+
+    public void setProductSizes(List<ProductSize> productSizes) {
+        this.productSizes = productSizes;
+    }
 }

@@ -3,6 +3,7 @@ package com.jiafang.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jiafang.model.*;
 import org.codehaus.plexus.util.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -17,13 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource.CreateConnectionTask;
 import com.jiafang.dao.ProductDao;
-import com.jiafang.model.Brand;
-import com.jiafang.model.CategoryRelationship;
-import com.jiafang.model.Company;
-import com.jiafang.model.Param;
-import com.jiafang.model.Pic;
-import com.jiafang.model.Product;
-import com.jiafang.model.SubProduct;
 import com.jiafang.service.Page;
 import com.jiafang.util.QiniuHelper;
 import com.jiafang.util.StringUtil;
@@ -113,6 +107,13 @@ public class ProductDaoImpl implements ProductDao{
 		List<SubProduct> subs = query.list();
 		
 		product.setSubProduct(subs);
+
+		for (SubProduct sub : subs){
+
+			query = sessionFactory.getCurrentSession().createCriteria(ProductSize.class);
+			query.add(Restrictions.eq("subProductId", sub.getId()));
+			sub.setProductSizes(query.list());
+		}
 		List<Pic> pics = new ArrayList<Pic>();
 		for(SubProduct p : subs){
 			Pic pic = new Pic();
@@ -203,8 +204,15 @@ public class ProductDaoImpl implements ProductDao{
 		return products;
 	}
 
+    @Override
+    public ProductSize queryProductSize(Integer sizeId) {
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(ProductSize.class);
+        query.add(Restrictions.idEq(sizeId));
+        return (ProductSize) query.uniqueResult();
+    }
 
-	@Override
+
+    @Override
 	public List<Product> queryByNameAndCompanyId(Page page, String name, Integer companyId) {
 		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p where p.company_id=" + companyId + " and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
 		sq.addEntity(Product.class);
@@ -470,21 +478,43 @@ public class ProductDaoImpl implements ProductDao{
 		
 		Session session = sessionFactory.getCurrentSession();  
 		session.beginTransaction();
-		String hql="delete SubProduct as sub where sub.id=?";
-		Query query=session.createQuery(hql);
-		query.setInteger(0,sub.getId());
-		query.executeUpdate();
+        String hql="delete SubProduct as sub where sub.id=?";
+        Query query=session.createQuery(hql);
+        query.setInteger(0,sub.getId());
+        query.executeUpdate();
+
+        hql="delete ProductSize as sub where sub.subProductId=?";
+        query=session.createQuery(hql);
+        query.setInteger(0,sub.getId());
+        query.executeUpdate();
 		session.getTransaction().commit();
 		return sub;
 	}
 
+    @Override
+    public ProductSize deleteProductSize(ProductSize sub) {
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        String hql="delete ProductSize as sub where sub.id=?";
+        Query query=session.createQuery(hql);
+        query.setInteger(0,sub.getId());
+        query.executeUpdate();
+        session.getTransaction().commit();
+        return sub;
+    }
 
-	@Override
+
+    @Override
 	public SubProduct getSubProduct(Integer subId) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(SubProduct.class);
-		query.add(Restrictions.idEq(subId));
-		SubProduct sub = (SubProduct)query.uniqueResult();  
-		return sub;
+        query.add(Restrictions.idEq(subId));
+        SubProduct sub = (SubProduct)query.uniqueResult();
+
+        query = sessionFactory.getCurrentSession().createCriteria(ProductSize.class);
+        query.add(Restrictions.eq("subProductId", subId));
+        sub.setProductSizes(query.list());
+
+        return sub;
 	}
 
 

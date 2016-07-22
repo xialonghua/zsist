@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.util.*;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.Company;
 import com.jiafang.model.Order;
 import com.jiafang.service.Page;
 import com.jiafang.util.ApiCall;
@@ -41,6 +42,8 @@ public class OrderAction extends JSONAction {
 	private Order order;
     private Page page;
 	private String aliResult;
+
+	private Company company;
 
 	@Action(value = "submitOrder", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
 	public String submitOrder() {
@@ -80,7 +83,12 @@ public class OrderAction extends JSONAction {
 		}else {
 			orderStatus = order.getOrderState();
 		}
-		setData(orderService.getOrders(user.getId(), orderStatus, page));
+        if (company == null){
+            setData(orderService.getOrders(user.getId(), orderStatus, page));
+        }else {
+            setData(orderService.getOrders(user.getId(), orderStatus, company.getId(), page));
+        }
+
 		return RETURN_JSON;
 	}
 
@@ -287,5 +295,13 @@ public class OrderAction extends JSONAction {
 
 	public void setAliResult(String aliResult) {
 		this.aliResult = aliResult;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 }

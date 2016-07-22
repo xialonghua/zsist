@@ -1,5 +1,6 @@
 package com.jiafang.filter;
 
+import com.jiafang.action.JSONAction;
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
 import com.jiafang.model.User;
@@ -24,6 +25,7 @@ public class CompanyInterceptor extends AbstractInterceptor implements Constants
         if (user.getLevel() != UserLevel.COMPANY.ordinal()){
             BaseResp resp = new BaseResp();
             resp.setCode(INVALIDAT_REQUEST);
+            JSONAction a = (JSONAction) invocation.getAction();
             return RETURN_JSON;
         }
         return invocation.invoke();

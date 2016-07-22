@@ -249,9 +249,7 @@
 	<profiles>
 	<profile>
 			<id>release-test</id>
-		<activation>
-			<activeByDefault>true</activeByDefault><!--默认启用的是dev环境配置 -->
-		</activation>
+
 			<properties>
 				<fileURLWithoutHttp>7rfleo.com1.z0.glb.clouddn.com</fileURLWithoutHttp>
 				<bucket>gotye</bucket>
@@ -271,7 +269,9 @@
 		</profile>
 		<profile>
 			<id>release-textile</id>
-
+			<activation>
+				<activeByDefault>true</activeByDefault><!--默认启用的是dev环境配置 -->
+			</activation>
 			<properties>
 				<fileURLWithoutHttp>7rfleo.com1.z0.glb.clouddn.com</fileURLWithoutHttp>
 				<bucket>gotye</bucket>

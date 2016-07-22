@@ -20,6 +20,7 @@ public interface OrderService extends Constants{
     BaseResp queryWeChatPayStatus(User user, Integer orderId);
 
     BaseResp getOrders(Integer userId, Integer orderStatus, Page page);
+    BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page);
     BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page);
     BaseResp getOrder(Integer userId, Integer orderId);
     BaseResp sendOrder(User user, Integer orderId, String logistics);

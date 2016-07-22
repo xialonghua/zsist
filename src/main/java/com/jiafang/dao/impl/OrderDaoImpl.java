@@ -141,7 +141,15 @@ public class OrderDaoImpl implements OrderDao{
         return query.list();
     }
 
-    @Override
+	@Override
+	public List<Order> getOrdersByCompanyId(Integer userId, Integer companyId, Page page) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		return query.list();
+	}
+
+	@Override
     public List<Order> getSellerOrders(Integer userId, Page page) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
         query.add(Restrictions.and(Restrictions.eq("sellerId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
@@ -157,7 +165,15 @@ public class OrderDaoImpl implements OrderDao{
         return query.list();
     }
 
-    @Override
+	@Override
+	public List<Order> getOrdersByCompanyId(Integer userId, Integer orderStatus, Integer companyId, Page page) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("orderState", orderStatus), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		return query.list();
+	}
+
+	@Override
     public List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
         query.add(Restrictions.and(Restrictions.eq("sellerId", userId), Restrictions.eq("orderState", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));

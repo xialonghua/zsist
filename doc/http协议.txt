@@ -111,7 +111,7 @@ http://localhost:8080/bu/product/getProductById?productId=1
 24.付款,生成订单号//0-weixin 1-ali
 /order/pay?order.id=&order.payType=&order.payAccount=
 25.获取买家订单列表
-/order/getOrders?order.orderStatus=-1(-1表示所有)&page.page=0&page.pageSize=10   
+/order/getOrders?order.orderState=-1(-1表示所有)&page.page=0&page.pageSize=10
 
 26.上传坐标
 /location/uploadLocation?user.lng=&user.lat=&user.lat=&user.province =&user.city=&user.cityCode=&user.adCode=&user.address=&user.country=&user.road=&user.poiName=&user.district=
@@ -147,7 +147,7 @@ http://localhost:8080/bu/product/getProductById?productId=1
 /user/bindUserCompany?bind.companyId=
 
 36.获取绑定用户列表
-/user/getUserCompanyByCompany?bind.companyId=
+/user/getUserListByCompany?bind.companyId=
 
 37.修改公司微信支付宝帐号
 /company/modifyCompanyWechatAlipayAccount?company.wechatAccount=&company.alipayAccount=

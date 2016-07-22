@@ -74,7 +74,7 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public UserCompanyBind queryUserCompanyBind(Integer userId, Integer companyId) {
-        Criteria query = sessionFactory.getCurrentSession().createCriteria(User.class)
+        Criteria query = sessionFactory.getCurrentSession().createCriteria(UserCompanyBind.class)
                 .add(Restrictions.or(Restrictions.eq("userId", userId), Restrictions.eq("companyId", companyId)));
         UserCompanyBind bind = (UserCompanyBind) query.uniqueResult();
         return bind;

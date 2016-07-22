@@ -148,33 +148,71 @@ public class OrderServiceImpl implements OrderService {
         Integer companyId = null;
         Integer sellerId = null;
         for (OrderProduct orderProduct : products) {
-            Product p = productDao.queryById(orderProduct.getProductId());
+
+            ProductSize size = null;
+            Integer sizeId = orderProduct.getProductSizeId();
+            Integer productId = null;
+            Product p = null;
+            if (sizeId != null){
+                size = productDao.queryProductSize(sizeId);
+                p = productDao.queryById(size.getProductId());
+            }else {
+                p = productDao.queryById(orderProduct.getProductId());
+            }
+
             if (p == null) {
                 resp.setCode(PRODUCT_NOT_FOUND);
                 return resp;
             }
+            companyId = p.getCompanyId();
             if (companyId != null && companyId != p.getCompanyId()) {
                 if (p == null) {
                     resp.setCode(INVALIDAT_REQUEST);
                     return resp;
                 }
             }
-            companyId = p.getCompanyId();
 
-            orderProduct.setDiscountPrice(p.getDiscountPrice());
-            orderProduct.setPrice(p.getPrice());
-            orderProduct.setName(p.getName());
-            orderProduct.setAvatar(p.getAvatar());
-            orderProduct.setVideo(p.getVideo());
+
+            Double discountPrice = null;
+            Double price = null;
+            String name = null;
+            String avatar = null;
+            String video = null;
+
+            if (size != null){
+                discountPrice = size.getDiscountPrice();
+                price = size.getPrice();
+
+                if (discountPrice == null) {
+                    discountPrice = size.getPrice();
+                }
+                if (discountPrice == null) {
+                    discountPrice = 0.0;
+                }
+
+
+            }else {
+                discountPrice = p.getDiscountPrice();
+                price = p.getPrice();
+
+                if (discountPrice == null) {
+                    discountPrice = p.getPrice();
+                }
+                if (discountPrice == null) {
+                    discountPrice = 0.0;
+                }
+            }
+            name = p.getName();
+            avatar = p.getAvatar();
+            video = p.getVideo();
+
+            orderProduct.setDiscountPrice(discountPrice);
+            orderProduct.setPrice(price);
+            orderProduct.setName(name);
+            orderProduct.setAvatar(avatar);
+            orderProduct.setVideo(video);
             orderProduct.setOrderNum(order.getOrderNum());
 
-            Double discountPrice = p.getDiscountPrice();
-            if (discountPrice == null) {
-                discountPrice = p.getPrice();
-            }
-            if (discountPrice == null) {
-                discountPrice = 0.0;
-            }
             Integer count = orderProduct.getCount();
             if (count == null) {
                 count = 0;
@@ -537,6 +575,29 @@ public class OrderServiceImpl implements OrderService {
             orders = orderDao.getOrders(userId, page);
         } else {
             orders = orderDao.getOrders(userId, orderStatus, page);
+
+        }
+
+        if (orders == null) {
+            orders = new ArrayList<>();
+        }
+        for (Order o : orders) {
+            o.setProducts(orderDao.getOrderProducts(o.getId()));
+        }
+
+        resp.setData(orders);
+        return resp;
+    }
+
+    @Override
+    public BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page) {
+        BaseResp resp = new BaseResp();
+        resp.setCode(SUCCESS);
+        List<Order> orders = null;
+        if (orderStatus == null || orderStatus.intValue() == -1) {
+            orders = orderDao.getOrdersByCompanyId(userId, companyId, page);
+        } else {
+            orders = orderDao.getOrdersByCompanyId(userId, orderStatus, companyId, page);
 
         }
 

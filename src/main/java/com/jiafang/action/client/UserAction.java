@@ -160,7 +160,7 @@ public class UserAction extends JSONAction {
         return RETURN_JSON;
     }
 
-    @Action(value = "getUserCompanyByCompany", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+    @Action(value = "getUserListByCompany", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
     public String getUserCompanyByCompany() {
 
         BaseResp resp = userService.getUserCompanyBinds(bind.getCompanyId(), page);

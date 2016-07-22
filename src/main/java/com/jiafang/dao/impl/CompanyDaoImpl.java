@@ -3,11 +3,7 @@ package com.jiafang.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +122,7 @@ public class CompanyDaoImpl implements CompanyDao{
 	@Override
 	public Company updateCompany(Company company) {
 		Session session = sessionFactory.getCurrentSession();  
-		session.beginTransaction();  
+		Transaction tr = session.beginTransaction();
 		Criteria query = session.createCriteria(Company.class);
 		query.add(Restrictions.eq("id", company.getId()));
 	    Company  temp = (Company) query.uniqueResult();
@@ -167,6 +163,7 @@ public class CompanyDaoImpl implements CompanyDao{
 	    session.saveOrUpdate(temp.getBrands().get(0));
 	    session.getTransaction().commit();
 	    company.setBrands(temp.getBrands());
+		tr.commit();
 		//sessionFactory.getCurrentSession().update(company);
 		return company;
 	}
@@ -174,14 +171,15 @@ public class CompanyDaoImpl implements CompanyDao{
 	@Override
 	public Company updateCompanyWechatAlipayAccount(Company company) {
 		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
+		Transaction transaction = session.beginTransaction();
 		Criteria query = session.createCriteria(Company.class);
 		query.add(Restrictions.eq("id", company.getId()));
 		Company  temp = (Company) query.uniqueResult();
 		temp.setWechatAccount(company.getWechatAccount());
-		temp.setAlipayAccount(temp.getAlipayAccount());
+		temp.setAlipayAccount(company.getAlipayAccount());
 		session.flush();
 		session.saveOrUpdate(temp);
+		transaction.commit();
 		return company;
 	}
 
@@ -222,7 +220,7 @@ public class CompanyDaoImpl implements CompanyDao{
 	@Override
 	public Pic updatePic(Pic pic){
 		Session session = sessionFactory.getCurrentSession();  
-		session.beginTransaction();  
+		session.beginTransaction();
 		Criteria query = session.createCriteria(Pic.class);
 		query.add(Restrictions.eq("id", pic.getId()));
 		Pic  temp = (Pic) query.uniqueResult();
