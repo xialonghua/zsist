@@ -172,9 +172,9 @@ function categotyRelationShipConfig(id,mark){
                                 <li>
                                     <a  id="type_1" href="javascript:getCategoriesByType('1')">·&nbsp;&nbsp;专区类型</a>
                                 </li>
-                                <!-- <li>
-                                    <a  id="type_2" href="javascript:getCategoriesByType('2')">·&nbsp;&nbsp;广告类型</a>
-                                </li> -->
+								<li>
+                                    <a  id="type_2" href="javascript:getCategoriesByType('4')">·&nbsp;&nbsp;广告类型</a>
+                                </li>
                             </ul>
                             <div class="clear"></div>
                         </div>

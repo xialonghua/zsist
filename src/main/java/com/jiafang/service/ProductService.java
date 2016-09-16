@@ -4,41 +4,49 @@ import java.util.List;
 
 import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
-import com.jiafang.model.Param;
-import com.jiafang.model.Pic;
-import com.jiafang.model.Product;
-import com.jiafang.model.SubProduct;
+import com.jiafang.model.*;
 
 public interface ProductService extends Constants{
 
-	BaseResp getProductsByCategory(Page page, Integer categoryId);
-	BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId);
+	BaseResp getProductsByCategory(Page page, Integer categoryId, int platform);
+	BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId, int platform);
+
+	BaseResp getProductsByCompanyId(Page page, Integer companyId, int platform);
 	
-	BaseResp getProductsByCompanyId(Page page, Integer companyId);
-	
-	BaseResp searchProducts(Page page, String name);
+	BaseResp searchProducts(Page page, String name, int platform);
 	
 	BaseResp searchCompanies(Page page, String name);
-	
-	BaseResp searchProductsByCategory(Page page, String name, Integer categoryId);
-	
-	BaseResp searchProductsByCompany(Page page, String name, Integer companyId);
+
+	BaseResp searchProductsByCategory(Page page, String name, Integer categoryId, int platform);
+
+	BaseResp searchProductsByCategory(Page page, String name, Integer categoryId, Integer companyId, int platform);
+
+
+	BaseResp searchProductsByCompany(Page page, String name, Integer companyId, int platform);
 	
 	BaseResp getProductById(Integer productId);
 	
-	BaseResp getProductsByCompanyUserId(Page page, Integer userId);
+	BaseResp getProductsByCompanyUserId(Page page, Integer userId, int platform);
 	
 	BaseResp addProduct(Product product);
 	
 	BaseResp modifyProduct(Product product);
 	
 	BaseResp deleteProduct(Product product);
-	
+
 	BaseResp addProductParam(Param param);
-	
+
 	BaseResp updateProductParam(Param param);
-	
+
 	BaseResp deleteProductParam(Param param);
+
+	BaseResp addProductSize(ProductSize param);
+
+	BaseResp updateProductSize(ProductSize param);
+
+	BaseResp updateProductPlatform(Product product);
+
+	BaseResp deleteProductSize(ProductSize param);
 	
 	BaseResp addPic(Pic pic);
 	

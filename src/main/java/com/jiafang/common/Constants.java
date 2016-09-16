@@ -2,6 +2,11 @@ package com.jiafang.common;
 
 public interface Constants {
 
+	//showPlatform
+	int PUBLIC = 0;
+	int PRIVATE = 1;
+	int ALL_PLAT = 2;
+
     //支付方式
 	int PAY_ALI = 1;
 	int PAY_WEIXIN = 0;

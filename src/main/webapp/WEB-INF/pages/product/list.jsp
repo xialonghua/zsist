@@ -139,6 +139,27 @@ function showView(i,url){
 	});
 }
 
+function platformChange(id){
+	var objS = $("#sel_" + id);
+	var grade = objS.children('option:selected').val();
+
+	$.ajax({
+		url : '${_ctx_}/product/modifyProductPlatform',// 跳转到 action
+		data : {
+			'product.id':id,
+			'product.showPlatform':grade
+		},
+		type : 'post',
+		cache : false,
+		dataType : 'json',
+		success : function(data) {
+		},
+		error : function() {
+			alert("异常！");
+		}
+	});
+}
+
 function imagesLoad(i,data){
 	JiaFang.getUrl('avatar_'+i,"${fileURL}/"+data); 
 }
@@ -197,7 +218,8 @@ function imagesLoad(i,data){
                           <th width="6%">折扣价</th>
                           <th width="6%">最低订购量</th>
                           <th width="7%">库存</th>
-                          <th width="7%">详情</th>
+						  <th width="7%">详情</th>
+						  <th width="7%">展示</th>
                           <th width="11%">操作</th>
                       </tr>
                   </table>
@@ -233,6 +255,26 @@ function imagesLoad(i,data){
 				<td class="txt_word"><&=tr.saleCount&></td>
 				<td class="txt_word"><&=tr.count&></td>
 				<td class="txt-c"><a class="modify" href="${_ctx_ }/page/productinfo?productId=<&=tr.id&>">参数详情</a></td>
+				<td class="txt_word">
+					<select id="sel_<&=tr.id&>" onchange="platformChange(<&=tr.id&>)">
+
+						<& if(tr.showPlatform==2){&>
+							<option value="2" selected="selected">所有</option>
+						<&}else {&>
+						    <option value="2">所有</option>
+						<&}&>
+						<& if(tr.showPlatform==1){&>
+							<option value="1" selected="selected">私有</option>
+						<&}else {&>
+						    <option value="1">私有</option>
+						<&}&>
+						<& if(tr.showPlatform==0){&>
+							<option value="0" selected="selected">平台</option>
+						<&}else {&>
+						    <option value="0">平台</option>
+						<&}&>
+    				</select>
+				</td>
 				<td class="txt-c">
 					<a class="modify" href="javascript:modify(<&=tr.id&>)">修改</a>&nbsp;
 					<a class="modify" href="${_ctx_ }/page/productconfig?productId=<&=tr.id&>">分类配置</a>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jiafang.model.*;
+import com.jiafang.util.PushUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -320,6 +321,8 @@ public class UserServiceImpl implements UserService {
         resp.setCode(SUCCESS);
         if(userDao.queryUserCompanyBind(bind.getUserId(), bind.getCompanyId()) == null){
             userDao.saveUserCompanyBind(bind);
+			Company company = companyDao.querySimpleById(bind.getCompanyId());
+			PushUtil.newBind(bind.getUserId(), company.getUserId());
         }
         return resp;
     }
@@ -413,7 +416,7 @@ public class UserServiceImpl implements UserService {
 			company.setId(0);
 		}
 		Page page = new Page(0, 999999);
-		List<Product> product = productDao.queryByCompanyId(page, company.getId());
+		List<Product> product = productDao.queryByCompanyId(page, company.getId(), PUBLIC);
 		userDao.delUser(user.getId(), company.getId(), product);
 		resp.setCode(SUCCESS);
 		return resp;

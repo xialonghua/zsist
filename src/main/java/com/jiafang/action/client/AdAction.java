@@ -1,6 +1,7 @@
 package com.jiafang.action.client;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.common.Constants;
 import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -29,17 +30,13 @@ public class AdAction extends JSONAction {
 	@Action(value = "getAds")
 	public String getCategories() {
 		if(type == 0){
-			if (company == null){
-				setData(categoryService.getAdsProduct());
+			if (company == null && isPublic()){
+				setData(categoryService.getAdsProduct(PUBLIC));
 			}else {
-				setData(categoryService.getAdsProduct(company.getId()));
+				setData(categoryService.getAdsProduct(company.getId(), PRIVATE));
 			}
 
 		}
-//		else if(type == 1){
-//			setData(categoryService.getAdsCompany());
-//		}
-//
 		return RETURN_JSON;
 	}
 	

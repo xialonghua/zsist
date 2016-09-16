@@ -33,49 +33,43 @@ public class ProductDaoImpl implements ProductDao{
 
 
 	@Override
-	public List<Product> queryByCatrgoryId(Page page, Integer categoryId) {
-		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
-		query.add(Restrictions.eq("categoryId", categoryId));
-		query.addOrder(Order.desc("weight"));
-//		query.addOrder(Order.desc("id"));
-		query.addOrder(Order.desc("avatar"));
-		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+	public List<Product> queryByCatrgoryId(Page page, Integer categoryId, int platform) {
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select ship.* from CategoryRelationship ship, Product p where ship.category_id=" + categoryId +  " and ship.company_id=p.id and (p.showPlatform = 2 or p.showPlatform=" + platform + ") order by ship.weight desc, ship.avatar desc limit " + page.getIndex() + ", " + page.getPageSize());
+		query.addEntity(CategoryRelationship.class);
+//		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+//		query.add(Restrictions.eq("categoryId", categoryId));
+//		query.addOrder(Order.desc("weight"));
+////		query.addOrder(Order.desc("id"));
+//		query.addOrder(Order.desc("avatar"));
+//		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		List<CategoryRelationship> ships = query.list();
 		List<Product> products = new ArrayList<Product>();
 		for(CategoryRelationship ship : ships){
-			query = sessionFactory.getCurrentSession().createCriteria(Product.class);
-			query.add(Restrictions.eq("id", ship.getProductId()));
-			Product product = (Product) query.uniqueResult();
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
-//			product.setPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
-//			product.setDescPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
-//			query.add(Restrictions.eq("productId", product.getId()));
-//			product.setParams(query.list());
-			products.add(product);
+			Criteria q = sessionFactory.getCurrentSession().createCriteria(Product.class);
+			q.add(Restrictions.eq("id", ship.getProductId()));
+			products.add((Product) q.uniqueResult());
 		}
 
 		return products;
 	}
 
 	@Override
-	public List<Product> queryByCatrgoryId(Page page, Integer categoryId, Integer companyId) {
-		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
-		query.add(Restrictions.and(Restrictions.eq("companyId", companyId), Restrictions.eq("categoryId", categoryId)));
+	public List<Product> queryByCatrgoryId(Page page, Integer categoryId, Integer companyId, int platform) {
+//		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+//		query.add(Restrictions.and(Restrictions.eq("companyId", companyId), Restrictions.eq("categoryId", categoryId)));
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select ship.* from CategoryRelationship ship, Product p where ship.company_id=" + companyId + " and ship.category_id=" + categoryId +  " and ship.company_id=p.id and (p.showPlatform = 2 or p.showPlatform=" + platform + ") order by ship.weight desc, ship.avatar desc limit " + page.getIndex() + ", " + page.getPageSize());
+		query.addEntity(CategoryRelationship.class);
 
-		query.addOrder(Order.desc("weight"));
-//		query.addOrder(Order.desc("id"));
-		query.addOrder(Order.desc("avatar"));
-		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+//		query.addOrder(Order.desc("weight"));
+////		query.addOrder(Order.desc("id"));
+//		query.addOrder(Order.desc("avatar"));
+//		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		List<CategoryRelationship> ships = query.list();
 		List<Product> products = new ArrayList<Product>();
 		for(CategoryRelationship ship : ships){
-			query = sessionFactory.getCurrentSession().createCriteria(Product.class);
-			query.add(Restrictions.eq("id", ship.getProductId()));
-			Product product = (Product) query.uniqueResult();
+			Criteria q = sessionFactory.getCurrentSession().createCriteria(Product.class);
+			q.add(Restrictions.eq("id", ship.getProductId()));
+			Product product = (Product) q.uniqueResult();
 			products.add(product);
 		}
 
@@ -134,54 +128,131 @@ public class ProductDaoImpl implements ProductDao{
 		return product;
 	}
 
-
 	@Override
-	public List<Product> queryByName(Page page, String name) {
-		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p where p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
-		sq.addEntity(Product.class);
-		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
-		List<Product> products = sq.list();
-//		Criteria query = null;
-//		for(Product product : products){
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
-//			product.setPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
-//			product.setDescPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
-//			query.add(Restrictions.eq("productId", product.getId()));
-//			product.setParams(query.list());
-//		}
-		return products;
-	}
-
-
-	@Override
-	public List<Product> queryByNameAndCategoryId(Page page, String name, Integer categoryId) {
-		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p, CategoryRelationship ship where ship.category_id=" + categoryId + " and p.id=ship.product_id and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
-		sq.addEntity(Product.class);
-		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
-		List<Product> products = sq.list();
-//		Criteria query = null;
-//		for(Product product : products){
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
-//			product.setPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
-//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
-//			product.setDescPics(query.list());
-//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
-//			query.add(Restrictions.eq("productId", product.getId()));
-//			product.setParams(query.list());
-//		}
-		return products;
-	}
-
-
-	@Override
-	public List<Product> queryByCompanyId(Page page, Integer companyId) {
+	public Product queryById(Integer productId, int platform) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(Product.class);
+		query.add(Restrictions.and(Restrictions.eq("id", productId), Restrictions.or(Restrictions.eq("showPlatform", 2), Restrictions.eq("showPlatform", platform))));
+
+		Product product = (Product) query.uniqueResult();
+
+		if(product == null){
+			return null;
+		}
+		query = sessionFactory.getCurrentSession().createCriteria(Brand.class);
+		query.add(Restrictions.eq("id", product.getBrandId()));
+		Brand brand = (Brand) query.uniqueResult();
+		if(brand != null){
+			product.setBrand(brand.getName());
+			product.setBrandId(brand.getId());
+		}
+
+		query = sessionFactory.getCurrentSession().createCriteria(SubProduct.class);
+		query.add(Restrictions.eq("productId", product.getId()));
+
+		List<SubProduct> subs = query.list();
+
+		product.setSubProduct(subs);
+
+		for (SubProduct sub : subs){
+
+			query = sessionFactory.getCurrentSession().createCriteria(ProductSize.class);
+			query.add(Restrictions.eq("subProductId", sub.getId()));
+			sub.setProductSizes(query.list());
+		}
+		List<Pic> pics = new ArrayList<Pic>();
+		for(SubProduct p : subs){
+			Pic pic = new Pic();
+			pic.setType(1);
+			pic.setUrl(p.getAvatar());
+			pic.setVideo(p.getVideo());
+			pic.setName(p.getName());
+			pics.add(pic);
+		}
+		product.setPics(pics);
+
+		query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+		query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
+		product.setDescPics(query.list());
+		query = sessionFactory.getCurrentSession().createCriteria(Param.class);
+		query.add(Restrictions.eq("productId", product.getId()));
+		product.setParams(query.list());
+		return product;
+	}
+
+
+	@Override
+	public List<Product> queryByName(Page page, String name, int platform) {
+		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p where (p.showPlatform = 2 or p.showPlatform=" + platform + ") and p.showPlatform=" + ALL_PLAT + " and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
+		sq.addEntity(Product.class);
+		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		List<Product> products = sq.list();
+//		Criteria query = null;
+//		for(Product product : products){
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
+//			product.setPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
+//			product.setDescPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
+//			query.add(Restrictions.eq("productId", product.getId()));
+//			product.setParams(query.list());
+//		}
+		return products;
+	}
+
+
+	@Override
+	public List<Product> queryByNameAndCategoryId(Page page, String name, Integer categoryId, Integer companyId, int platform) {
+		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p, CategoryRelationship ship where p.company_id=" + companyId + " and ship.category_id=" + categoryId + " and p.id=ship.product_id and (p.showPlatform = 2 or p.showPlatform=" + platform + ") and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
+		sq.addEntity(Product.class);
+		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		List<Product> products = sq.list();
+//		Criteria query = null;
+//		for(Product product : products){
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
+//			product.setPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
+//			product.setDescPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
+//			query.add(Restrictions.eq("productId", product.getId()));
+//			product.setParams(query.list());
+//		}
+		return products;
+	}
+
+	@Override
+	public List<Product> queryByNameAndCategoryId(Page page, String name, Integer categoryId, int platform) {
+		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p, CategoryRelationship ship where ship.category_id=" + categoryId + " and p.id=ship.product_id and (p.showPlatform = 2 or p.showPlatform=" + platform + ") and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
+		sq.addEntity(Product.class);
+		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
+		List<Product> products = sq.list();
+//		Criteria query = null;
+//		for(Product product : products){
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 1)));
+//			product.setPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Pic.class);
+//			query.add(Restrictions.and(Restrictions.eq("productId", product.getId()), Restrictions.eq("type", 2)));
+//			product.setDescPics(query.list());
+//			query = sessionFactory.getCurrentSession().createCriteria(Param.class);
+//			query.add(Restrictions.eq("productId", product.getId()));
+//			product.setParams(query.list());
+//		}
+		return products;
+	}
+
+
+	@Override
+	public List<Product> queryByCompanyId(Page page, Integer companyId, int platform) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(Product.class);
+		if (platform == ALL_PLAT){
+			query.add(Restrictions.or(Restrictions.eq("showPlatform", PUBLIC), Restrictions.eq("showPlatform", PRIVATE), Restrictions.eq("showPlatform", ALL_PLAT)));
+		}else{
+			query.add(Restrictions.or(Restrictions.eq("showPlatform", platform), Restrictions.eq("showPlatform", ALL_PLAT)));
+		}
 		query.add(Restrictions.eq("companyId", companyId));
 //		query.addOrder(Order.desc("weight"));
 		query.addOrder(Order.desc("id"));
@@ -213,8 +284,8 @@ public class ProductDaoImpl implements ProductDao{
 
 
     @Override
-	public List<Product> queryByNameAndCompanyId(Page page, String name, Integer companyId) {
-		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p where p.company_id=" + companyId + " and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
+	public List<Product> queryByNameAndCompanyId(Page page, String name, Integer companyId, int platform) {
+		SQLQuery sq = sessionFactory.getCurrentSession().createSQLQuery("select p.* from Product p where p.company_id=" + companyId + " and (p.showPlatform = 2 or p.showPlatform=" + platform + ") and p.name like '%" + name + "%' order by p.weight desc, p.avatar desc");
 		sq.addEntity(Product.class);
 		sq.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		List<Product> products = sq.list();
@@ -239,6 +310,7 @@ public class ProductDaoImpl implements ProductDao{
 	
 	@Override
 	public Product saveProduct(Product product){
+		product.setShowPlatform(1);
 		if (!StringUtils.isEmpty(product.getVideo()) && !product.getVideo().endsWith("_thumb")) {
 			QiniuHelper.thumbVideo(product.getVideo());
 			product.setVideo(product.getVideo() + "_thumb");
@@ -336,7 +408,48 @@ public class ProductDaoImpl implements ProductDao{
 		session.getTransaction().commit();
 		return param;
 	}
-	
+
+	@Override
+	public ProductSize saveProductSize(ProductSize param) {
+		sessionFactory.getCurrentSession().save(param);
+		return param;
+	}
+
+	@Override
+	public ProductSize updateProductSize(ProductSize param) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		Criteria query = session.createCriteria(ProductSize.class);
+		query.add(Restrictions.eq("id", param.getId()));
+		ProductSize  temp = (ProductSize) query.uniqueResult();
+		temp.setName(param.getName());
+		temp.setAvatar(param.getAvatar());
+		temp.setDiscountPrice(param.getDiscountPrice());
+		temp.setCount(param.getCount());
+		temp.setDescription(param.getDescription());
+		temp.setNum(param.getNum());
+		temp.setVideo(param.getVideo());
+		temp.setPrice(param.getPrice());
+		temp.setSaleCount(param.getSaleCount());
+		session.flush();
+		session.saveOrUpdate(temp);
+		session.getTransaction().commit();
+		return param;
+	}
+
+	@Override
+	public void updateProductPlatform(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		String hql="update Product set showPlatform=? where id=?";
+		Query query=session.createSQLQuery(hql);
+		query.setInteger(0, product.getShowPlatform());
+		query.setInteger(1, product.getId());
+		query.executeUpdate();
+		session.getTransaction().commit();
+	}
+
 	@Override
 	public Pic savePic(Pic pic){
 		sessionFactory.getCurrentSession().save(pic);

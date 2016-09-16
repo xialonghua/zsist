@@ -50,7 +50,13 @@ public class OrderAction extends JSONAction {
 		Map<String, Object> session = getSession();
 
 		User user = (User) session.get("user");
-		setData(orderService.submitOrder(user.getId(), order));
+
+		if (company == null && isPublic()){
+			setData(orderService.submitOrder(user.getId(), order, PUBLIC));
+		}else {
+			setData(orderService.submitOrder(user.getId(), order, PRIVATE));
+		}
+
 		return RETURN_JSON;
 	}
 
@@ -83,10 +89,10 @@ public class OrderAction extends JSONAction {
 		}else {
 			orderStatus = order.getOrderState();
 		}
-        if (company == null){
-            setData(orderService.getOrders(user.getId(), orderStatus, page));
+        if (company == null && isPublic()){
+            setData(orderService.getOrders(user.getId(), orderStatus, page, PUBLIC));
         }else {
-            setData(orderService.getOrders(user.getId(), orderStatus, company.getId(), page));
+            setData(orderService.getOrders(user.getId(), orderStatus, company.getId(), page, PRIVATE));
         }
 
 		return RETURN_JSON;
@@ -103,7 +109,12 @@ public class OrderAction extends JSONAction {
 		}else {
 			orderStatus = order.getOrderState();
 		}
-		setData(orderService.getSellerOrders(user.getId(), orderStatus, page));
+		if (company == null && isPublic()){
+			setData(orderService.getSellerOrders(user.getId(), orderStatus, page, PUBLIC));
+		}else {
+			setData(orderService.getSellerOrders(user.getId(), orderStatus, page, PRIVATE));
+		}
+
 		return RETURN_JSON;
 	}
 

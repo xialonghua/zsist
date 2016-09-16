@@ -53,6 +53,11 @@ public class Order extends BaseTime implements java.io.Serializable {
     private Long receiveTime;//收货时间
     private Long cancelTime;//取消时间
 
+    private Integer isWithdraw;//是否提现  0-否 1-是
+
+    private Integer platform;
+    private String froms;
+
 	public Order() {
 	}
 
@@ -283,5 +288,32 @@ public class Order extends BaseTime implements java.io.Serializable {
 
     public void setSellerId(Integer sellerId) {
         this.sellerId = sellerId;
+    }
+
+    @Column(columnDefinition="INT default 0")
+    public Integer getIsWithdraw() {
+        return isWithdraw;
+    }
+
+    public void setIsWithdraw(Integer isWithdraw) {
+        this.isWithdraw = isWithdraw;
+    }
+
+    @Column(columnDefinition="INT default 1")
+    public Integer getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Integer platform) {
+        this.platform = platform;
+    }
+
+
+    public String getFroms() {
+        return froms;
+    }
+
+    public void setFroms(String froms) {
+        this.froms = froms;
     }
 }

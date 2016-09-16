@@ -1,9 +1,6 @@
 package com.jiafang.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +46,18 @@ public class CategoryServiceImpl implements CategoryService{
 	public BaseResp getCategories(Page page) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		resp.setData(categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999)));
+		List<Category> cats = categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999));
+
+		Iterator<Category> it = cats.iterator();
+
+		while (it.hasNext()){
+			Category category = it.next();
+            Long count = categoryDao.queryRelationshipCountByCatrgoryId(category.getId());
+			if (count == null || count == 0){
+				it.remove();
+			}
+		}
+		resp.setData(cats);
 		return resp;
 	}
 
@@ -57,7 +65,18 @@ public class CategoryServiceImpl implements CategoryService{
 	public BaseResp getCategories(Page page, Integer companyId) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		resp.setData(categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999), companyId));
+		List<Category> cats = categoryDao.queryByType(CategoryType.COMMON.ordinal(), new Page(0, 9999), companyId);
+
+		Iterator<Category> it = cats.iterator();
+
+		while (it.hasNext()){
+			Category category = it.next();
+            Long count = categoryDao.queryRelationshipCountByCatrgoryId(category.getId(), companyId);
+			if (count == null || count == 0){
+				it.remove();
+			}
+		}
+        resp.setData(cats);
 		return resp;
 	}
 	
@@ -162,7 +181,7 @@ public class CategoryServiceImpl implements CategoryService{
 	}
 
 	@Override
-	public BaseResp getAdsProduct() {
+	public BaseResp getAdsProduct(int platform) {
 
 		List<Category> cats = categoryDao.queryByType(CategoryType.AD_PRODUCT.ordinal(), new Page(0, 9999));
 		List<Ad> ads = new ArrayList<Ad>();
@@ -174,7 +193,7 @@ public class CategoryServiceImpl implements CategoryService{
 			List<CategoryRelationship> ships = categoryDao.queryRelationshipByCatrgoryId(new Page(0, 999), cat.getId());
 			for(CategoryRelationship ship : ships){
 				if(ship.getProductId() != null){
-					Product p = productDao.queryById(ship.getProductId());
+					Product p = productDao.queryById(ship.getProductId(), platform);
 					p.setCategoryShips(categoryDao.queryRelationshipsByProductId(p.getId()));
 
 					ship.setAvatar(p.getAvatar());
@@ -203,9 +222,12 @@ public class CategoryServiceImpl implements CategoryService{
 	}
 
 	@Override
-	public BaseResp getAdsProduct(Integer companyId) {
-
-		List<Category> cats = categoryDao.queryByType(CategoryType.AD_PRODUCT.ordinal(), new Page(0, 9999));
+	public BaseResp getAdsProduct(Integer companyId, int platform) {
+		int ctype = CategoryType.AD_PRODUCT.ordinal();
+		if (platform == PRIVATE){
+			ctype = CategoryType.AD_PRIVATE.ordinal();
+		}
+		List<Category> cats = categoryDao.queryByType(ctype, new Page(0, 9999));
 		List<Ad> ads = new ArrayList<Ad>();
 
 		for(Category cat : cats){
@@ -215,7 +237,7 @@ public class CategoryServiceImpl implements CategoryService{
 			List<CategoryRelationship> ships = categoryDao.queryRelationshipByCatrgoryId(new Page(0, 999), cat.getId(), companyId);
 			for(CategoryRelationship ship : ships){
 				if(ship.getProductId() != null){
-					Product p = productDao.queryById(ship.getProductId());
+					Product p = productDao.queryById(ship.getProductId(), platform);
 					p.setCategoryShips(categoryDao.queryRelationshipsByProductId(p.getId()));
 
 					ship.setAvatar(p.getAvatar());
@@ -391,7 +413,7 @@ public class CategoryServiceImpl implements CategoryService{
 	public BaseResp addRelationship(CategoryRelationship ship) {
 		BaseResp resp = new BaseResp();
 		Integer pId = ship.getProductId();
-		Integer cId = ship.getCompanyId();
+//		Integer cId = ship.getCompanyId();
 		if(pId!=null){
 			if(categoryDao.queryShipIdByProductCategory(pId,ship.getCategoryId())!=null){
 				resp.setDescription("已经绑定到类中");
@@ -399,13 +421,13 @@ public class CategoryServiceImpl implements CategoryService{
 				return resp;
 			}
 		}
-		if(cId!=null){
-			if(categoryDao.queryShipIdByCompanyCategory(cId,ship.getCategoryId())!=null){
-				resp.setDescription("已经绑定到类中");
-				resp.setCode(500);
-				return resp;
-			}
-		}
+//		if(cId!=null){
+//			if(categoryDao.queryShipIdByCompanyCategory(cId,ship.getCategoryId())!=null){
+//				resp.setDescription("已经绑定到类中");
+//				resp.setCode(500);
+//				return resp;
+//			}
+//		}
 		ship = categoryDao.saveRelationship(ship);
 		resp.setData(ship);
 		resp.setCode(SUCCESS);

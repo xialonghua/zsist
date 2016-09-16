@@ -370,8 +370,7 @@ $(function(){
               </div>
          </div>
     </div>
-    
-    <div id="dialog" title="" style="display: none">
+	<div id="dialog" title="" style="display: none">
 	<div class="imageBox">
         <div class="thumbBox"></div>
         <div class="spinner" style="display: none">Loading...</div>

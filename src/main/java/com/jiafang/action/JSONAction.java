@@ -2,6 +2,7 @@ package com.jiafang.action;
 
 import com.jiafang.model.User;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -34,6 +35,18 @@ public class JSONAction implements Constants{
 	protected Map<String, Object> getSession(){
 		ActionContext actionContext = ActionContext.getContext();
 		return actionContext.getSession();
+	}
+
+	public boolean isPublic(){
+		String head = ServletActionContext.getRequest().getHeader("CALL_FROM");
+		if (head == null || head.equals("PUBLIC")){
+			return true;
+		}
+		return false;
+	}
+
+	public Integer getHeadCompanyId(){
+		return 0;
 	}
 
 	public User getLoginUser() {

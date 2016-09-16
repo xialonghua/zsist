@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.common.Constants;
 import com.jiafang.model.*;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
@@ -47,6 +48,16 @@ public class ProductAction extends JSONAction {
 	private List<Pic> pics;
 	
 	private Integer picType;
+
+	public ProductSize getProductSize() {
+		return productSize;
+	}
+
+	public void setProductSize(ProductSize productSize) {
+		this.productSize = productSize;
+	}
+
+	private ProductSize productSize;
 	
 	@Action(value = "getProducts")
 	public String getAllProduct() {
@@ -56,10 +67,10 @@ public class ProductAction extends JSONAction {
 	
 	@Action(value = "getProductsByCategory")
 	public String getProducts() {
-		if (company == null){
-			setData(productService.getProductsByCategory(page, categoryId));
+		if (company == null && isPublic()){
+			setData(productService.getProductsByCategory(page, categoryId, PUBLIC));
 		}else {
-			setData(productService.getProductsByCategory(page, categoryId, company.getId()));
+			setData(productService.getProductsByCategory(page, categoryId, company.getId(), PRIVATE));
 		}
 
 		return RETURN_JSON;
@@ -67,7 +78,11 @@ public class ProductAction extends JSONAction {
 	
 	@Action(value = "getProductsByCompany")
 	public String getProductsByCompany() {
-		setData(productService.getProductsByCompanyId(page, companyId));
+        if (company == null && isPublic()){
+            setData(productService.getProductsByCompanyId(page, companyId, PUBLIC));
+        }else {
+            setData(productService.getProductsByCompanyId(page, companyId, PRIVATE));
+        }
 		return RETURN_JSON;
 	}
 	
@@ -75,7 +90,7 @@ public class ProductAction extends JSONAction {
 	public String getProductsByCompanyUserId() {
 	    Map<String, Object> session = getSession();
 	    User user = (User) session.get("user");
-		setData(productService.getProductsByCompanyUserId(page, user.getId()));
+		setData(productService.getProductsByCompanyUserId(page, user.getId(), ALL_PLAT));
 		return RETURN_JSON;
 	}
 	
@@ -94,6 +109,8 @@ public class ProductAction extends JSONAction {
 	@Action(value = "addProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProduct() {
 		//product.setName(StringUtil.encode(productName));
+        Company company = (Company) getSession().get("user_level_1_company");
+        product.setCompanyId(company.getId());
 		setData(productService.addProduct(product));
 		return RETURN_JSON;
 	}
@@ -108,6 +125,8 @@ public class ProductAction extends JSONAction {
 	@Action(value = "modifyProduct", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProduct() {
 		//product.setName(StringUtil.encode(productName));
+        Company company = (Company) getSession().get("user_level_1_company");
+        product.setCompanyId(company.getId());
 		setData(productService.modifyProduct(product));
 		return RETURN_JSON;
 	}
@@ -215,22 +234,46 @@ public class ProductAction extends JSONAction {
 		setData(productService.getProductPics(productId,picType));
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "addProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addProductParam() {
 		setData(productService.addProductParam(param));
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "modifyProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String modifyProductParam() {
 		setData(productService.updateProductParam(param));
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "deleteProductParam", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteProductParam() {
 		setData(productService.deleteProductParam(param));
+		return RETURN_JSON;
+	}
+
+	@Action(value = "addProductSize", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+	public String addProductSize() {
+		setData(productService.addProductSize(productSize));
+		return RETURN_JSON;
+	}
+
+	@Action(value = "modifyProductSize", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+	public String modifyProductSize() {
+		setData(productService.updateProductSize(productSize));
+		return RETURN_JSON;
+	}
+
+	@Action(value = "modifyProductPlatform", interceptorRefs={@InterceptorRef(LOGIN_INTERCEPTOR)})
+	public String modifyProductPlatform() {
+		setData(productService.updateProductPlatform(product));
+		return RETURN_JSON;
+	}
+
+	@Action(value = "deleteProductSize", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
+	public String deleteProductSize() {
+		setData(productService.deleteProductSize(productSize));
 		return RETURN_JSON;
 	}
 	

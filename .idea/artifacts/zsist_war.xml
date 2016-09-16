@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="zsist:war">
     <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="baihuo.war">
+    <root id="archive" name="textile.war">
       <element id="artifact" artifact-name="zsist:war exploded" />
     </root>
   </artifact>

@@ -3,6 +3,7 @@ package com.jiafang.dao;
 import java.util.List;
 
 import com.jiafang.model.Company;
+import com.jiafang.model.CompanyPayInfo;
 import com.jiafang.model.Pic;
 import com.jiafang.model.Product;
 import com.jiafang.service.Page;
@@ -11,6 +12,8 @@ public interface CompanyDao {
 
 	public List<Company> query(Page page);
 	public List<Company> queryOrderById(Page page);
+
+	public CompanyPayInfo queryCompanyPayInfoByType(Integer companyId, Integer type);
 	
 	public Company saveCompany(Company company);
 	

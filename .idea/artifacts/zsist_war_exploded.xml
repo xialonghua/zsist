@@ -1,15 +1,16 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="zsist:war exploded">
-    <output-path>$PROJECT_DIR$/target/baihuo</output-path>
+    <output-path>$PROJECT_DIR$/target/textile</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="zsist" />
         </element>
         <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.json:json:20160212" />
+          <element id="library" level="project" name="Maven: org.jdom:jdom:1.1.3" />
           <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.9" />
           <element id="library" level="project" name="Maven: com.qiniu:qiniu-java-sdk:7.0.5" />
-          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.3.1" />
           <element id="library" level="project" name="Maven: com.squareup.okhttp:okhttp:2.3.0" />
           <element id="library" level="project" name="Maven: com.squareup.okio:okio:1.3.0" />
           <element id="library" level="project" name="Maven: org.springframework:spring-core:4.2.1.RELEASE" />
@@ -93,10 +94,16 @@
           <element id="library" level="project" name="Maven: com.lowagie:itext:2.1.0" />
           <element id="library" level="project" name="Maven: bouncycastle:bcmail-jdk14:136" />
           <element id="library" level="project" name="Maven: bouncycastle:bcprov-jdk14:136" />
+          <element id="library" level="project" name="Maven: cn.jpush.api:jpush-client:3.2.9" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.2.4" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.16" />
+          <element id="library" level="project" name="Maven: com.google.guava:guava:17.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/target/baihuo/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/textile/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="zsist/web/Web" />
     </root>

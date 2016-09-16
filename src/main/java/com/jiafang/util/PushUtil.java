@@ -24,7 +24,9 @@ import java.util.Set;
 public class PushUtil {
 
     static JPushClient jpushClient = new JPushClient("4e6677d392cc517f210c8942", "4f3fab1e1ba1ff984e247ff8");
+    static JPushClient jpushClientKangFuck = new JPushClient("198163c74e806b5893650857", "25fd97f72bc499c5ed74f6d1");
 
+    static JPushClient[] pushClients = new JPushClient[]{jpushClient, jpushClientKangFuck};
 
     public static void newOrder(Integer userId, Integer orderId) {
 
@@ -45,6 +47,13 @@ public class PushUtil {
         Map<String, String> map = new HashMap<>();
         map.put("orderId", orderId.toString());//order id
         push(new String[]{userId.toString()}, "您的订单已由" + nickname + "完成付款，请尽快发货。", "订单已支付", "您的订单已由" + nickname + "完成付款，请尽快发货。", PushType.PAY_ORDER, map);
+    }
+
+    public static void newBind(Integer userId, Integer companyUserId) {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("userId", userId.toString());//客户ID
+        push(new String[]{companyUserId.toString()}, "您有一个新的客户，点击查看。", "新的客户", "您有一个新的客户，点击查看。", PushType.NEW_BIND, map);
     }
 
     public static void sendOrder(Integer userId, Integer orderId, String orderTitle, String nickname) {
@@ -88,23 +97,30 @@ public class PushUtil {
                         .build())
                 .build();
 
-        try {
-            PushResult result = jpushClient.sendPush(payload);
-            System.out.println("push --> " + result);
+        for (JPushClient client : pushClients){
+            try {
+                PushResult result = client.sendPush(payload);
+                System.out.println("push --> " + result);
 
-        } catch (APIConnectionException e) {
-            // Connection error, should retry later
-//			LOG.error("Connection error, should retry later", e);
-            e.printStackTrace();
+            } catch (APIConnectionException e) {
+                // Connection error, should retry later
+    //			LOG.error("Connection error, should retry later", e);
+                e.printStackTrace();
 
-        } catch (APIRequestException e) {
-            e.printStackTrace();
-            // Should review the error, and fix the request
-//			LOG.error("Should review the error, and fix the request", e);
-//			LOG.info("HTTP Status: " + e.getStatus());
-//			LOG.info("Error Code: " + e.getErrorCode());
-//			LOG.info("Error Message: " + e.getErrorMessage());
-            System.out.println("push --> " + e.getErrorMessage());
+            } catch (APIRequestException e) {
+                e.printStackTrace();
+                // Should review the error, and fix the request
+    //			LOG.error("Should review the error, and fix the request", e);
+    //			LOG.info("HTTP Status: " + e.getStatus());
+    //			LOG.info("Error Code: " + e.getErrorCode());
+    //			LOG.info("Error Message: " + e.getErrorMessage());
+                System.out.println("push --> " + e.getErrorMessage());
+            }
         }
+    }
+
+    private static JPushClient getClient(int index){
+
+        return pushClients[index];
     }
 }

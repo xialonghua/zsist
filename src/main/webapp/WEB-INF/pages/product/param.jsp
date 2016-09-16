@@ -392,6 +392,10 @@
                 }
             });
         }
+        function setsize(subId, index) {
+
+        }
+
         function deleteSub(subId, index) {
             $.ajax({
                 url: '${_ctx_}/product/deleteSubProduct',// 跳转到 action
@@ -689,6 +693,7 @@
                         "<img src id='sub_avatar_" + (subProdouctCount - 1) + "' title='" + sub.name + "' onclick='modifySubProdctParam(" + sub.id + ")' onMouseOver='openPic(" + (subProdouctCount - 1) + ",1)' onMouseOut='toolTip();' > " +
                         "<div class='replace'><input class='btn1' type='button' value='替换'/><form><input type='file' id='sub_" + sub.id + "' name='U_" + sub.id + "' class='file' onchange='updateSubAvatar(" + sub.id + ")'></form></div>" +
                         "<input class='btn1' type='button' value='删除' onclick='deleteSub(" + sub.id + "," + (subProdouctCount - 1) + ")'/>" +
+                        "<input class='btn1' type='button' value='尺寸设置' onclick='modifySubProdctParam('" + sub.id + ")'/>" +
                         "<input type='hidden' class='titleId' value='" + sub.id + "'/>" +
                         "</td></tr>");
             } else {
@@ -697,7 +702,8 @@
                         "<img src id='sub_avatar_" + (subProdouctCount - 1) + "' title='" + sub.name + "' onclick='modifySubProdctParam(" + sub.id + ")' onMouseOver='openPic(" + (subProdouctCount - 1) + ",1)' onMouseOut='toolTip();'> " +
                         "<div class='replace'><input class='btn1' type='button' value='替换'/><form><input type='file' id='sub_" + sub.id + "' name='U_" + sub.id + "' class='file' onchange='updateSubAvatar(" + sub.id + ")'></form></div>" +
                         "<input class='btn1' type='button' value='删除' onclick='deleteSub(" + sub.id + "," + (subProdouctCount - 1) + ")'/>" +
-                        "<input type='hidden' class='titleId' value='" + sub.id + "'/>" +
+                        "<input class='btn1' type='button' value='尺寸设置' onclick='modifySubProdctParam('" + sub.id + ")'/>" +
+                "<input type='hidden' class='titleId' value='" + sub.id + "'/>" +
                         "</td>");
             }
             JiaFang.getUrl('sub_avatar_' + (subProdouctCount - 1), "${fileURL}/" + sub.avatar);
@@ -733,32 +739,182 @@
 
         }
 
-        function modifySubProdctParam(id) {
-            //location.href="${_ctx_ }/page/productaddparam?productId=${productId}"
+        function addProductSize(id){
+
+            $("#ppname").val('');
+            $("#ppprice").val('');
+            $("#ppdis").val('');
+            $("#ppsale").val('');
+            $("#ppcount").val('');
+
+            $("#subProductId").val(id);
+            //location.href="${_ctx_ }/page/productaddparam?productId=${productId}";
             //单击确定按钮时，从对话框中取得数据
-            $.get("${_ctx_}/product/getSubProductById", {"subProduct.id": id}, function (data) {
-                var sub = data.data;
-                $("#subProductPrice").val(sub.price);
-                $("#subProductDiscountPrice").val(sub.discountPrice);
-                $("#subProductSaleCount").val(sub.saleCount);
-                $("#subProductCount").val(sub.count);
-            });
             var getResponse = function () {
                 var self = $(this);
-                JiaFang.showLoading("正在修改...");
-                var v = $("#modSubForm").serialize() + "&subProduct.id=" + id;
-                $.post("${_ctx_}/product/modifySubProduct", v, function (data) {
+                JiaFang.showLoading("正在添加...");
+                $.post("${_ctx_}/product/addProductSize", $("#addProductSizeForm").serialize(), function (data) {
                     JiaFang.hideLoading();
                     //关闭对话框
                     self.dialog("close");
                     if (data.code == 200) {
-                        JiaFang.showSuccessToast("修改成功！");
-                        doCancel();
+                        var item = data.data;
+                        var trs = "<tr id=ptr" + item.id + ">" +
+                                "<td id=pname_" + item.id + ">" + item.name + "</td>" +
+                                "<td id=pprice_" + item.id + ">" + item.price + "</td>" +
+                                "<td id=pdis_" + item.id + ">" + item.discountPrice + "</td>" +
+                                "<td id=psale_" + item.id + ">" + item.saleCount + "</td>" +
+                                "<td id=pcount_" + item.id + ">" + item.count + "</td>" +
+                                "<td><a href='javascript:modifyProductSize(" + item.id + ")'>编辑</a> <a href='javascript:delProductSize(this, " + item.id + ")'>删除</a></td>" +
+                                "</tr>"
+
+                        $("#productSizeList tbody").append(trs);
+                    }
+                    else {
+                        JiaFang.showFailedToast("添加失败！");
+                    }
+                }, "json");
+
+            };
+            //单击取消按钮
+            var doCancel = function () {
+                $(this).dialog("close");
+            };
+
+            //设置对话框的默认值
+            var dialogOpts = {
+                //添加按钮
+                buttons: {
+                    确定: getResponse,
+                    取消: doCancel
+                },
+                //禁止自动开发
+                autoOpen: false,
+                //关闭时效果
+                hide: true,
+                modal:true,
+                width:500,
+
+            };
+            //加载对话框
+            $("#addProductSizeDialog").dialog(dialogOpts);
+            //按钮的单击事件
+            $("#addProductSizeDialog").dialog("open");
+        }
+
+        function modifyProductSize(id){
+            var pname = $("#pname_" + id);
+            var name = pname.text();
+            $("#ppname").val(name);
+            $("#ppprice").val($("#pprice_" + id).text());
+            $("#ppdis").val($("#pdis_" + id).text());
+            $("#ppsale").val($("#psale_" + id).text());
+            $("#ppcount").val($("#pcount_" + id).text());
+
+            $("#productSizeId").val(id);
+            //location.href="${_ctx_ }/page/productaddparam?productId=${productId}";
+            //单击确定按钮时，从对话框中取得数据
+            var getResponse = function () {
+                var self = $(this);
+                JiaFang.showLoading("正在修改...");
+                $.post("${_ctx_}/product/modifyProductSize", $("#addProductSizeForm").serialize(), function (data) {
+                    JiaFang.hideLoading();
+                    //关闭对话框
+                    self.dialog("close");
+                    if (data.code == 200) {
+                        var item = data.data;
+                        $("#pname_" + item.id).text(item.name);
+                        $("#pprice_" + item.id).text(item.price);
+                        $("#pdis_" + item.id).text(item.discountPrice);
+                        $("#psale_" + item.id).text(item.saleCount);
+                        $("#pcount_" + item.id).text(item.count);
                     }
                     else {
                         JiaFang.showFailedToast("修改失败！");
                     }
                 }, "json");
+
+            };
+            //单击取消按钮
+            var doCancel = function () {
+                $(this).dialog("close");
+            };
+
+            //设置对话框的默认值
+            var dialogOpts = {
+                //添加按钮
+                buttons: {
+                    确定: getResponse,
+                    取消: doCancel
+                },
+                //禁止自动开发
+                autoOpen: false,
+                //关闭时效果
+                hide: true,
+                modal:true,
+                width:500,
+
+            };
+            //加载对话框
+            $("#addProductSizeDialog").dialog(dialogOpts);
+            //按钮的单击事件
+            $("#addProductSizeDialog").dialog("open");
+        }
+        function delProductSize(obj, id){
+            $.get("${_ctx_}/product/deleteProductSize?productSize.id=" + id, function (data) {
+                JiaFang.hideLoading();
+                if (data.code == 200) {
+                    var a = $("#pname_" + id);
+                    var p = a.parent();
+                    p.remove();
+                }
+                else {
+                    JiaFang.showFailedToast("修改失败！");
+                }
+            });
+        }
+
+        function modifySubProdctParam(id) {
+            //location.href="${_ctx_ }/page/productaddparam?productId=${productId}"
+            //单击确定按钮时，从对话框中取得数据
+            $.get("${_ctx_}/product/getSubProductById", {"subProduct.id": id}, function (data) {
+
+                var button = "<a href='javascript:addProductSize(" + id + ")'>添加</a>"
+                $("#addBtn").html('');
+                $("#addBtn").append(button);
+                $("#productSizeList tbody").html("");
+                for(var i=0;i < data.data.productSizes.length;i++){
+                    var item = data.data.productSizes[i];
+                    var trs = "<tr id=ptr_" + item.id + ">" +
+                            "<td id=pname_" + item.id + ">" + item.name + "</td>" +
+                            "<td id=pprice_" + item.id + ">" + item.price + "</td>" +
+                            "<td id=pdis_" + item.id + ">" + item.discountPrice + "</td>" +
+                            "<td id=psale_" + item.id + ">" + item.saleCount + "</td>" +
+                            "<td id=pcount_" + item.id + ">" + item.count + "</td>" +
+                            "<td><a href='javascript:modifyProductSize(" + item.id + ")'>编辑</a> <a href='javascript:delProductSize(this, " + item.id + ")'>删除</a></td>" +
+                            "</tr>"
+
+                    $("#productSizeList tbody").append(trs);
+                }
+
+            });
+            var getResponse = function () {
+                $(this).dialog("close");
+                <%--var self = $(this);--%>
+                <%--JiaFang.showLoading("正在修改...");--%>
+                <%--var v = $("#modSubForm").serialize() + "&subProduct.id=" + id;--%>
+                <%--$.post("${_ctx_}/product/modifySubProduct", v, function (data) {--%>
+                    <%--JiaFang.hideLoading();--%>
+                    <%--//关闭对话框--%>
+                    <%--self.dialog("close");--%>
+                    <%--if (data.code == 200) {--%>
+                        <%--JiaFang.showSuccessToast("修改成功！");--%>
+                        <%--doCancel();--%>
+                    <%--}--%>
+                    <%--else {--%>
+                        <%--JiaFang.showFailedToast("修改失败！");--%>
+                    <%--}--%>
+                <%--}, "json");--%>
 
             };
             //单击取消按钮
@@ -775,7 +931,9 @@
                 //禁止自动开发
                 autoOpen: false,
                 //关闭时效果
-                hide: true
+                hide: true,
+                modal:true,
+                width:500,
             };
             $("#modSubProductDialog").dialog(dialogOpts);
             $("#modSubProductDialog").dialog("open");
@@ -933,6 +1091,7 @@
 
 </script>
 
+
 <script type="tmpl" id="js_table_tmpl_subProduct">
         <& 
 		for(var i=0,tl = subProduct.length,tr;i < tl;i++){ &>
@@ -948,12 +1107,12 @@
         <&} &>
 			<td width="12.5%" class="txt-c">
 				<div class="pic_box">
-					<input class="sub_title" type="text" name="title" id="title_<&=sub.id&>" placeholder="子产品标题" value="<&=sub.name&>"/>  
-					
+					<input class="sub_title" type="text" name="title" id="title_<&=sub.id&>" placeholder="子产品标题" value="<&=sub.name&>"/>
 				</div>
-				<img src="" id="sub_avatar_<&=i&>" title="<&=sub.name&>" onclick="modifySubProdctParam(<&=sub.id&>)" onMouseOver="openPic(<&=i&>,'1')" onMouseOut="toolTip();"> 
+				<img src="" id="sub_avatar_<&=i&>" title="<&=sub.name&>" onMouseOver="openPic(<&=i&>,'1')" onMouseOut="toolTip();">
 				<div class="replace"><input class="btn1" type="button" value="替换"/><form><input type="file" id="sub_<&=sub.id&>" name="U_<&=sub.id&>" class="file" onchange="updateSubAvatar('<&=sub.id&>')"></form></div>
 				<input class="btn1" type="button" value="删除" onclick="deleteSub('<&=sub.id&>','<&=i&>')"/>
+				<input class="btn1" type="button" value="尺寸设置" onclick="modifySubProdctParam('<&=sub.id&>')"/>
 				<input type="hidden" class="titleId" value="<&=sub.id&>"/>
 			</td>
         <& } &>
@@ -1001,6 +1160,40 @@
         </table>
     </form>
 </div>
+
+<div id="addProductSizeDialog" title="添加规格" style="display: none">
+    <form id="addProductSizeForm">
+        <input class="txt" type="hidden" value="" name="productSize.id"
+               id="productSizeId"/>
+        <input class="txt" type="hidden" value="<%=request.getParameter("productId") %>" name="productSize.productId"
+               id="productSize.productId"/>
+        <input class="txt" type="hidden" value="" name="productSize.subProductId"
+               id="subProductId"/>
+        <table class="table" width="98%" cellpadding="0" cellspacing="0">
+            <tr>
+                <th width="19%">名字</th>
+                <td width="81%"><input class="txt" type="text" name="productSize.name" id="ppname"/></td>
+            </tr>
+            <tr>
+                <th width="19%">价格</th>
+                <td width="81%"><input class="txt" type="text" name="productSize.price" id="ppprice"/></td>
+            </tr>
+            <tr>
+                <th width="19%">折后价</th>
+                <td width="81%"><input class="txt" type="text" name="productSize.discountPrice" id="ppdis"/></td>
+            </tr>
+            <tr>
+                <th width="19%">最低购买量</th>
+                <td width="81%"><input class="txt" type="text" name="productSize.saleCount" id="ppsale"/></td>
+            </tr>
+            <tr>
+                <th width="19%">库存</th>
+                <td width="81%"><input class="txt" type="text" name="productSize.count" id="ppcount"/></td>
+            </tr>
+
+        </table>
+    </form>
+</div>
 <div id="modParamDialog" title="修改参数" style="display: none">
     <form id="modForm">
         <input class="txt" type="hidden" value="<%=request.getParameter("productId") %>" name="param.productId"
@@ -1019,31 +1212,26 @@
     </form>
 </div>
 
-<div id="modSubProductDialog" title="设置子产品参数" style="display: none">
+<div id="modSubProductDialog" title="设置子产品参数"  style="width:500px;display: none">
     <form id="modSubForm">
-        <table class="table" width="98%" cellpadding="0" cellspacing="0">
-            <tr>
-                <th width="19%">原价</th>
-                <td width="81%"><input class="txt" type="text" value="" name="subProduct.price" id="subProductPrice"/>
-                </td>
-            </tr>
-            <tr>
-                <th width="19%">折扣价</th>
-                <td width="81%"><input class="txt" type="text" value="" name="subProduct.discountPrice"
-                                       id="subProductDiscountPrice"/></td>
-            </tr>
-            <tr>
-                <th width="19%">最低订购量</th>
-                <td width="81%"><input class="txt" type="text" value="" name="subProduct.saleCount"
-                                       id="subProductSaleCount"/></td>
-            </tr>
-            <tr>
-                <th width="19%">库存</th>
-                <td width="81%"><input class="txt" type="text" value="" name="subProduct.count" id="subProductCount"/>
-                </td>
-            </tr>
+        <div id="addBtn">
+
+        </div>
+        <table id="productSizeList" class="table" cellpadding="0" cellspacing="0">
+            <thead> <tr>
+                <th>规格</th>
+                <th>原价</th>
+                <th>折扣价</th>
+                <th>最低订购量</th>
+                <th>库存</th>
+                <th>操作</th>
+            </tr></thead>
+
+            <tbody></tbody>
         </table>
     </form>
 </div>
+
+
 <div id="toolTipLayer" style="position:absolute; visibility: hidden"></div>
 <script type="text/javascript" src="${_ctx_}/js/ToolTip.js"></script>

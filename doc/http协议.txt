@@ -152,6 +152,9 @@ http://localhost:8080/bu/product/getProductById?productId=1
 37.修改公司微信支付宝帐号
 /company/modifyCompanyWechatAlipayAccount?company.wechatAccount=&company.alipayAccount=
 
+38.获取相关配置
+/config/getConfig?company.id=
+
 
 
 

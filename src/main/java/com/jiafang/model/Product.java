@@ -42,6 +42,8 @@ public class Product extends BaseTime implements java.io.Serializable,Categoryab
 	
 	private CategoryRelationship categoryShip;
 	private List<CategoryRelationship> categoryShips;
+
+	private Integer showPlatform;//在哪个平台显示   0-公共   1-私有  2-所有
 	
 	public Product() {
 	}
@@ -253,5 +255,13 @@ public class Product extends BaseTime implements java.io.Serializable,Categoryab
 	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
-	
+
+	@Column(columnDefinition="INT default 2")
+	public Integer getShowPlatform() {
+		return showPlatform;
+	}
+
+	public void setShowPlatform(Integer showPlatform) {
+		this.showPlatform = showPlatform;
+	}
 }

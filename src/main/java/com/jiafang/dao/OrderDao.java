@@ -31,15 +31,15 @@ public interface OrderDao {
 
 	Order getOrder(String orderNum);
 
-	List<Order> getOrders(Integer userId, Page page);
-	List<Order> getOrdersByCompanyId(Integer userId, Integer companyId, Page page);
-    List<Order> getSellerOrders(Integer userId, Page page);
-	List<Order> getOrders(Integer userId, Integer orderStatus, Page page);
-	List<Order> getOrdersByCompanyId(Integer userId, Integer orderStatus, Integer companyId, Page page);
-    List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page);
+	List<Order> getOrders(Integer userId, Page page, Integer platform);
+	List<Order> getOrdersByCompanyId(Integer userId, Integer companyId, Page page, Integer platform);
+    List<Order> getSellerOrders(Integer userId, Page page, Integer platform);
+	List<Order> getOrders(Integer userId, Integer orderStatus, Page page, Integer platform);
+	List<Order> getOrdersByCompanyId(Integer userId, Integer orderStatus, Integer companyId, Page page, Integer platform);
+    List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page, Integer platform);
 
 	public void updateOrderStatusBySeller(Integer userId, Integer orderId, Integer orderStatus);
     void updateOrderStatus(Integer userId, Integer orderId, Integer orderStatus);
-    void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime);
+    void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime, String from);
 
 }

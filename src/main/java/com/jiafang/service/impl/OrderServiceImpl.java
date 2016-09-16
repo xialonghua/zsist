@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp submitOrder(Integer userId, Order order) {
+    public BaseResp submitOrder(Integer userId, Order order, Integer platform) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
 
@@ -223,6 +223,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(totalPrice.doubleValue());
         order.setCompanyId(companyId);
         order.setPayType(null);
+        order.setPlatform(platform);
 
         Company company = companyDao.queryById(companyId);
         if (company == null){
@@ -326,62 +327,79 @@ public class OrderServiceImpl implements OrderService {
         PayInfo info = new PayInfo();
         info.setPayType(payType);
         if (payType == PAY_ALI) {
-//            AlipayTradeCreateResponse response = AliPayUtils.create(payAccount, order.getOrderNum(), order.getExtraInfo(), 0.01);
-//            if (response == null){
-//                resp.setCode(SYSTEM_ERROR);
-//                return resp;
-//            }
-//            String tradeNo = response.getTradeNo();
-//            if (!StringUtils.isEmpty(tradeNo)){
-//                order.setPayAccount(payAccount);
-//                order.setPayNum(response.getTradeNo());
-//                order.setPayType(PAY_ALI);
-//
-//                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
-//                resp.setCode(SUCCESS);
-//                resp.setData(order);
-//                return resp;
-//            }
 
             resp.setCode(PAY_UNKOWN_TYPE);
             return resp;
         } else if (payType == PAY_WEIXIN){
 
+            String noncestr = WXUtil.getNonceStr();
+
+            PrepayIdRequestHandler queryOrder = new PrepayIdRequestHandler(ServletActionContext.getRequest(), ServletActionContext.getResponse());//获取prepayid的请求类
+            queryOrder.setParameter("appid", ConstantUtil.APP_ID);
+            queryOrder.setParameter("mch_id", ConstantUtil.PARTNER);
+            queryOrder.setParameter("nonce_str", noncestr);
+            queryOrder.setParameter("out_trade_no", order.getOrderNum());
+
+            //生成获取预支付签名
+            String sign = queryOrder.createMD5();
+            //增加非参与签名的额外参数
+            queryOrder.setParameter("sign", sign);
+            String gateUrl = "https://api.mch.weixin.qq.com/pay/closeorder";
+            queryOrder.setGateUrl(gateUrl);
+
+            //获取prepayId
+            String prepayid = null;
+            Map<String, String> map = null;
+            try {
+//                prepayid = queryOrder.sendPrepay();
+//                System.out.println(prepayid);
+            } catch (Exception e) {
+                e.printStackTrace();
+                resp.setCode(SYSTEM_ERROR);
+                return resp;
+            }
+
             PrepayIdRequestHandler prepayReqHandler = new PrepayIdRequestHandler(ServletActionContext.getRequest(), ServletActionContext.getResponse());//获取prepayid的请求类
-            ClientRequestHandler clientHandler = new ClientRequestHandler(ServletActionContext.getRequest(), ServletActionContext.getResponse());//返回客户端支付参数的请求类
 
             int retcode;
             String retmsg = "";
             String xml_body = "";
             //获取token值
-            String noncestr = WXUtil.getNonceStr();
+
+            CompanyPayInfo payInfo = companyDao.queryCompanyPayInfoByType(order.getCompanyId(), PAY_WEIXIN);
+
+            noncestr = WXUtil.getNonceStr();
             String timestamp = WXUtil.getTimeStamp();
             String traceid = "";
             ////设置获取prepayid支付参数
-            prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
-            prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);
+            if (payInfo == null){
+                prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
+                prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);
+            }else {
+                prepayReqHandler.setParameter("appid", payInfo.getPk());
+                prepayReqHandler.setParameter("mch_id", payInfo.getPartnerId());
+            }
+
             prepayReqHandler.setParameter("nonce_str", noncestr);
             prepayReqHandler.setParameter("body", order.getExtraInfo());
             prepayReqHandler.setParameter("out_trade_no", order.getOrderNum());
             BigDecimal   b   =   new   BigDecimal(order.getTotalPrice());
-            prepayReqHandler.setParameter("total_fee", "1");
+            prepayReqHandler.setParameter("total_fee", b.multiply(new BigDecimal(100)).intValue() + "");
             prepayReqHandler.setParameter("spbill_create_ip", "112.124.39.147");//ServletActionContext.getRequest().getRemoteAddr());
             prepayReqHandler.setParameter("notify_url", "https://112.124.39.147:8443" + Config.getBaseUrl() + "order/wechatPayCallback");
             prepayReqHandler.setParameter("trade_type", "APP");
 
 
             //生成获取预支付签名
-            String sign = prepayReqHandler.createMD5();
+            sign = prepayReqHandler.createMD5();
             //增加非参与签名的额外参数
             prepayReqHandler.setParameter("sign", sign);
-            String gateUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+            gateUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
             prepayReqHandler.setGateUrl(gateUrl);
 
-            //获取prepayId
-            String prepayid = null;
-            Map<String, String> map = null;
             try {
                 prepayid = prepayReqHandler.sendPrepay();
+                System.out.println(prepayid);
                 map = XMLUtil.doXMLParse(prepayid);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -389,6 +407,7 @@ public class OrderServiceImpl implements OrderService {
                 return resp;
             }
             String code = map.get("return_code");
+
             if ("SUCCESS".equals(code)){
 
                 String id = map.get("prepay_id");
@@ -403,17 +422,13 @@ public class OrderServiceImpl implements OrderService {
                 order.setPayNum(id);
 
                 orderDao.updateOrderStatus(order.getUserId(), order.getId(), order.getOrderState());
-                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
-                User buyer = userDao.queryByUserId(order.getUserId());
-                String nickname = "";
-                if (buyer == null){
-                    nickname = "";
+                if (payInfo == null){
+                    orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), ConstantUtil.PARTNER);
+
                 }else {
-                    nickname = buyer.getNickname();
+                    orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), payInfo.getPartnerId());
                 }
 
-
-                PushUtil.payOrder(order.getSellerId(), order.getId(), nickname);
                 resp.setCode(SUCCESS);
                 return resp;
             }else {
@@ -473,7 +488,7 @@ public class OrderServiceImpl implements OrderService {
                 order.setOrderState(OrderState.已付款.ordinal());
 
                 orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
-                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), response.getOpenId());
                 PushUtil.payOrder(order.getSellerId(), order.getId(), user.getNickname());
                 resp.setCode(SUCCESS);
                 resp.setData(order);
@@ -514,8 +529,16 @@ public class OrderServiceImpl implements OrderService {
             String timestamp = WXUtil.getTimeStamp();
             String traceid = "";
             ////设置获取prepayid支付参数
-            prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
-            prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);
+            CompanyPayInfo payInfo = companyDao.queryCompanyPayInfoByType(order.getCompanyId(), PAY_WEIXIN);
+
+            ////设置获取prepayid支付参数
+            if (payInfo == null){
+                prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
+                prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);
+            }else {
+                prepayReqHandler.setParameter("appid", payInfo.getPk());
+                prepayReqHandler.setParameter("mch_id", payInfo.getPartnerId());
+            }
             prepayReqHandler.setParameter("nonce_str", noncestr);
             prepayReqHandler.setParameter("out_trade_no", order.getOrderNum());
 
@@ -548,9 +571,11 @@ public class OrderServiceImpl implements OrderService {
                     order.setPayTime(System.currentTimeMillis());
                     order.setPayType(PAY_WEIXIN);
                     order.setOrderState(OrderState.已付款.ordinal());
+                    order.setFroms(map.get("mch_id"));
 
                     orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
-                    orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+                    orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), order.getFroms());
+
                     PushUtil.payOrder(order.getSellerId(), order.getId(), user.getNickname());
                     resp.setCode(SUCCESS);
                     resp.setData(order);
@@ -567,14 +592,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp getOrders(Integer userId, Integer orderStatus, Page page) {
+    public BaseResp getOrders(Integer userId, Integer orderStatus, Page page, Integer platform) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         List<Order> orders = null;
         if (orderStatus == null || orderStatus.intValue() == -1) {
-            orders = orderDao.getOrders(userId, page);
+            orders = orderDao.getOrders(userId, page, platform);
         } else {
-            orders = orderDao.getOrders(userId, orderStatus, page);
+            orders = orderDao.getOrders(userId, orderStatus, page, platform);
 
         }
 
@@ -590,14 +615,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page) {
+    public BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page, Integer platform) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         List<Order> orders = null;
         if (orderStatus == null || orderStatus.intValue() == -1) {
-            orders = orderDao.getOrdersByCompanyId(userId, companyId, page);
+            orders = orderDao.getOrdersByCompanyId(userId, companyId, page, platform);
         } else {
-            orders = orderDao.getOrdersByCompanyId(userId, orderStatus, companyId, page);
+            orders = orderDao.getOrdersByCompanyId(userId, orderStatus, companyId, page, platform);
 
         }
 
@@ -613,14 +638,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page) {
+    public BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page, Integer platform) {
         BaseResp resp = new BaseResp();
         resp.setCode(SUCCESS);
         List<Order> orders = null;
         if (orderStatus == null || orderStatus.intValue() == -1) {
-            orders = orderDao.getSellerOrders(userId, page);
+            orders = orderDao.getSellerOrders(userId, page, platform);
         } else {
-            orders = orderDao.getSellerOrders(userId, orderStatus, page);
+            orders = orderDao.getSellerOrders(userId, orderStatus, page, platform);
 
         }
 
@@ -739,7 +764,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderDao.updateOrderStatus(userId, orderId, OrderState.已完成.ordinal());
-
+//        orderDao.
         PushUtil.receiveOrder(order.getSellerId(), orderId, order.getExtraInfo(), user.getNickname());
         resp.setCode(SUCCESS);
         return resp;
@@ -780,6 +805,7 @@ public class OrderServiceImpl implements OrderService {
         String outTradeNo = request.getParameter("out_trade_no");
         String buyerEmail = request.getParameter("buyer_email");
         String buyerId = request.getParameter("buyer_id");
+        String sellerId = request.getParameter("seller_id");
 
         if (tradeStatus.equals("TRADE_FINISHED")){
             return "SUCCESS";
@@ -845,7 +871,7 @@ public class OrderServiceImpl implements OrderService {
             order.setPayTime(System.currentTimeMillis());
 
             orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
-            orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+            orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), sellerId);
 
             User buyer = userDao.queryByUserId(order.getUserId());
             String nickname = "";
@@ -901,11 +927,12 @@ public class OrderServiceImpl implements OrderService {
             if ("SUCCESS".equals(state)) {
                 order.setPayAccount(map.get("openid"));
                 order.setPayNum(map.get("transaction_id"));
+                order.setFroms(map.get("mch_id"));
                 order.setPayTime(System.currentTimeMillis());
                 order.setOrderState(OrderState.已付款.ordinal());
 
                 orderDao.updateOrderStatus(order.getUserId(), order.getId(), OrderState.已付款.ordinal());
-                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime());
+                orderDao.updateOrderPayInfo(order.getUserId(), order.getId(), order.getPayAccount(), order.getPayNum(), order.getPayType(), order.getPayTime(), order.getFroms());
 
                 User buyer = userDao.queryByUserId(order.getUserId());
                 String nickname = "";

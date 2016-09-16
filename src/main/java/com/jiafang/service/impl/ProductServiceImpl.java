@@ -27,29 +27,29 @@ public class ProductServiceImpl implements ProductService{
 	private CategoryDao categoryDao;
 
 	@Override
-	public BaseResp getProductsByCategory(Page page, Integer categoryId) {
+	public BaseResp getProductsByCategory(Page page, Integer categoryId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByCatrgoryId(page, categoryId);
+		List<Product> products = productDao.queryByCatrgoryId(page, categoryId, platform);
 		resp.setData(products);
 		return resp;
 	}
 
 	@Override
-	public BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId) {
+	public BaseResp getProductsByCategory(Page page, Integer categoryId, Integer companyId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByCatrgoryId(page, categoryId, companyId);
+		List<Product> products = productDao.queryByCatrgoryId(page, categoryId, companyId, platform);
 		resp.setData(products);
 		return resp;
 	}
 
 
 	@Override
-	public BaseResp searchProducts(Page page, String name) {
+	public BaseResp searchProducts(Page page, String name, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByName(page, name);
+		List<Product> products = productDao.queryByName(page, name, platform);
 		resp.setData(products);
 		return resp;
 	}
@@ -64,20 +64,29 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public BaseResp searchProductsByCategory(Page page, String name, Integer categoryId) {
+	public BaseResp searchProductsByCategory(Page page, String name, Integer categoryId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByNameAndCategoryId(page, name, categoryId);
+		List<Product> products = productDao.queryByNameAndCategoryId(page, name, categoryId, platform);
+		resp.setData(products);
+		return resp;
+	}
+
+	@Override
+	public BaseResp searchProductsByCategory(Page page, String name, Integer categoryId, Integer companyId, int platform) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		List<Product> products = productDao.queryByNameAndCategoryId(page, name, categoryId, companyId, platform);
 		resp.setData(products);
 		return resp;
 	}
 
 
 	@Override
-	public BaseResp getProductsByCompanyId(Page page, Integer companyId) {
+	public BaseResp getProductsByCompanyId(Page page, Integer companyId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByCompanyId(page, companyId);
+		List<Product> products = productDao.queryByCompanyId(page, companyId, platform);
 		for(Product obj : products){
 			List<CategoryRelationship> ships = categoryDao.queryRelationshipsByProductId(obj.getId());
 			obj.setCategoryShips(ships);
@@ -88,20 +97,20 @@ public class ProductServiceImpl implements ProductService{
 
 
 	@Override
-	public BaseResp searchProductsByCompany(Page page, String name, Integer companyId) {
+	public BaseResp searchProductsByCompany(Page page, String name, Integer companyId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
-		List<Product> products = productDao.queryByNameAndCompanyId(page, name, companyId);
+		List<Product> products = productDao.queryByNameAndCompanyId(page, name, companyId, platform);
 		resp.setData(products);
 		return resp;
 	}
 	
 	@Override
-	public BaseResp getProductsByCompanyUserId(Page page, Integer userId) {
+	public BaseResp getProductsByCompanyUserId(Page page, Integer userId, int platform) {
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
 		Company company = companyDao.queryByUserId(userId);
-		List<Product> products = productDao.queryByCompanyId(page, company.getId());
+		List<Product> products = productDao.queryByCompanyId(page, company.getId(), platform);
 		for(Product obj : products){
 			List<CategoryRelationship> ships = categoryDao.queryRelationshipsByProductId(obj.getId());
 			for(CategoryRelationship temp : ships){
@@ -130,6 +139,7 @@ public class ProductServiceImpl implements ProductService{
 				ship.setProductId(product.getId());
 				ship.setAvatar(product.getAvatar());
 				ship.setVideo(product.getVideo());
+				ship.setCompanyId(product.getCompanyId());
 				categoryDao.saveRelationship(ship);
 			}
 		}
@@ -150,6 +160,8 @@ public class ProductServiceImpl implements ProductService{
 			product.setBrandId(company.getBrands().get(0).getId());
 			product.setBrand(company.getBrands().get(0).getName());
 		}
+
+		product.setCategoryShips(categoryDao.queryRelationshipsByProductId(productId));
 		resp.setData(product);
 		return resp;
 	}
@@ -247,6 +259,41 @@ public class ProductServiceImpl implements ProductService{
 		BaseResp resp = new BaseResp();
 		resp.setCode(SUCCESS);
 		param = productDao.deleteParam(param);
+		resp.setData(param);
+		return resp;
+	}
+
+	@Override
+	public BaseResp addProductSize(ProductSize param) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		param = productDao.saveProductSize(param);
+		resp.setData(param);
+		return resp;
+	}
+
+	@Override
+	public BaseResp updateProductSize(ProductSize param) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		param = productDao.updateProductSize(param);
+		resp.setData(param);
+		return resp;
+	}
+
+	@Override
+	public BaseResp updateProductPlatform(Product product) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		productDao.updateProductPlatform(product);
+		return resp;
+	}
+
+	@Override
+	public BaseResp deleteProductSize(ProductSize param) {
+		BaseResp resp = new BaseResp();
+		resp.setCode(SUCCESS);
+		param = productDao.deleteProductSize(param);
 		resp.setData(param);
 		return resp;
 	}

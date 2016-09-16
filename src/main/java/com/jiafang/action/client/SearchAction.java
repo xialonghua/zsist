@@ -1,6 +1,7 @@
 package com.jiafang.action.client;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -22,22 +23,46 @@ public class SearchAction extends JSONAction {
 	private Integer categoryId;
 	private Integer companyId;
 	private String name;
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	private Company company;
 	
 	@Action(value = "seachProducts")
 	public String seachProducts() {
-		setData(productService.searchProducts(page, name));
+		if (isPublic()){
+			setData(productService.searchProducts(page, name, PUBLIC));
+		}else{
+			setData(productService.searchProducts(page, name, PRIVATE));
+		}
+
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "seachProductsByCategory")
 	public String seachProductsByCategory() {
-		setData(productService.searchProductsByCategory(page, name, categoryId));
+		if (isPublic()){
+			setData(productService.searchProductsByCategory(page, name, categoryId, PUBLIC));
+		}else{
+			setData(productService.searchProductsByCategory(page, name, categoryId, company.getId(), PRIVATE));
+		}
+
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "seachProductsByCompany")
 	public String seachProductsByCompany() {
-		setData(productService.searchProductsByCompany(page, name, companyId));
+		if (isPublic()){
+			setData(productService.searchProductsByCompany(page, name, companyId, PUBLIC));
+		}else{
+			setData(productService.searchProductsByCompany(page, name, companyId, PRIVATE));
+		}
 		return RETURN_JSON;
 	}
 	

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface OrderService extends Constants{
 
-	BaseResp submitOrder(Integer userId, Order order);
+	BaseResp submitOrder(Integer userId, Order order, Integer platform);
 
 	BaseResp cancelOrder(User user, Integer orderId);
 
@@ -19,9 +19,9 @@ public interface OrderService extends Constants{
     BaseResp queryPayStatus(User user, Integer orderId);
     BaseResp queryWeChatPayStatus(User user, Integer orderId);
 
-    BaseResp getOrders(Integer userId, Integer orderStatus, Page page);
-    BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page);
-    BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page);
+    BaseResp getOrders(Integer userId, Integer orderStatus, Page page, Integer platform);
+    BaseResp getOrders(Integer userId, Integer orderStatus, Integer companyId, Page page, Integer platform);
+    BaseResp getSellerOrders(Integer userId, Integer orderStatus, Page page, Integer platform);
     BaseResp getOrder(Integer userId, Integer orderId);
     BaseResp sendOrder(User user, Integer orderId, String logistics);
     BaseResp receiveOrder(User user, Integer orderId);

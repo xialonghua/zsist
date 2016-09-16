@@ -16,6 +16,8 @@ public interface CategoryDao {
 	public Category queryById(int id);
 	
 	public CategoryRelationship queryRelationshipByShipId(Integer shipId);
+	Long queryRelationshipCountByCatrgoryId(Integer categoryId, Integer company);
+	Long queryRelationshipCountByCatrgoryId(Integer categoryId);
 	
 	public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId);
     List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId, Integer companyId);
@@ -39,9 +41,9 @@ public interface CategoryDao {
 	public void deleteRelationshipByCategoryId(int categoryId);
 	
 	public void deleteRelationshipByCategoryIdProductId(Integer categoryId, Integer productId);
-	
+
 	public Integer queryShipIdByProductCategory(int productId, int categoryId);
-	
+
 	public Integer queryShipIdByCompanyCategory(int companyId, int categoryId);
 	
 	public Integer queryMaxWeight();

@@ -134,49 +134,49 @@ public class OrderDaoImpl implements OrderDao{
     }
 
     @Override
-    public List<Order> getOrders(Integer userId, Page page) {
+    public List<Order> getOrders(Integer userId, Page page, Integer platform) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("userId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("userId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
 
 	@Override
-	public List<Order> getOrdersByCompanyId(Integer userId, Integer companyId, Page page) {
+	public List<Order> getOrdersByCompanyId(Integer userId, Integer companyId, Page page, Integer platform) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+		query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("userId", userId), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
 		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		return query.list();
 	}
 
 	@Override
-    public List<Order> getSellerOrders(Integer userId, Page page) {
+    public List<Order> getSellerOrders(Integer userId, Page page, Integer platform) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("sellerId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("sellerId", userId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
 
     @Override
-    public List<Order> getOrders(Integer userId, Integer orderStatus, Page page) {
+    public List<Order> getOrders(Integer userId, Integer orderStatus, Page page, Integer platform) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("orderState", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("userId", userId), Restrictions.eq("orderState", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
 
 	@Override
-	public List<Order> getOrdersByCompanyId(Integer userId, Integer orderStatus, Integer companyId, Page page) {
+	public List<Order> getOrdersByCompanyId(Integer userId, Integer orderStatus, Integer companyId, Page page, Integer platform) {
 		Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-		query.add(Restrictions.and(Restrictions.eq("userId", userId), Restrictions.eq("orderState", orderStatus), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+		query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("userId", userId), Restrictions.eq("orderState", orderStatus), Restrictions.eq("companyId", companyId))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
 		query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
 		return query.list();
 	}
 
 	@Override
-    public List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page) {
+    public List<Order> getSellerOrders(Integer userId, Integer orderStatus, Page page, Integer platform) {
         Criteria query = sessionFactory.getCurrentSession().createCriteria(Order.class);
-        query.add(Restrictions.and(Restrictions.eq("sellerId", userId), Restrictions.eq("orderState", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
+        query.add(Restrictions.and(Restrictions.eq("platform", platform), Restrictions.eq("sellerId", userId), Restrictions.eq("orderState", orderStatus))).addOrder(org.hibernate.criterion.Order.desc("createTime"));
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
@@ -227,18 +227,19 @@ public class OrderDaoImpl implements OrderDao{
     }
 
 	@Override
-	public void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime) {
+	public void updateOrderPayInfo(Integer userId, Integer orderId, String payAccount, String payNo, Integer payType, Long payTime, String froms) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		String hql="update Orders set payAccount=?, payNum=?, payType=?, payTime=? where id=? and userId=?";
+		String hql="update Orders set payAccount=?, payNum=?, payType=?, payTime=?, froms=? where id=? and userId=?";
 		Query query=session.createSQLQuery(hql);
 		query.setString(0, payAccount);
 		query.setString(1, payNo);
         query.setInteger(2, payType);
         query.setLong(3, payTime == null ? 0 : payTime);
-		query.setInteger(4, orderId);
-		query.setInteger(5, userId);
+		query.setString(4, froms);
+		query.setInteger(5, orderId);
+		query.setInteger(6, userId);
 		query.executeUpdate();
 		session.getTransaction().commit();
 

@@ -25,7 +25,7 @@ public class ZoneAction extends JSONAction {
 	
 	@Action(value = "getZones")
 	public String getZones() {
-		if (company == null){
+		if (company == null && isPublic()){
 			setData(categoryService.getZones(count));
 		}else {
 			setData(categoryService.getZones(count, company.getId()));

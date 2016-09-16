@@ -6,7 +6,7 @@
 	<!-- 所有匹配*.action的请求都由struts2处理 -->
 	<constant name="struts.action.extension" value="action" />
 	<!-- 是否启用开发模式(开发时设置为true,发布到生产环境后设置为false) -->
-	<constant name="struts.devMode" value="true" />
+	<constant name="struts.devMode" value="false" />
 	<!-- struts配置文件改动后，是否重新加载(开发时设置为true,发布到生产环境后设置为false) -->
 	<constant name="struts.configuration.xml.reload" value="true" />
 	<!-- 设置浏览器是否缓存静态内容(开发时设置为false,发布到生产环境后设置为true) -->
@@ -31,9 +31,22 @@
 
 		<interceptors>
 			<interceptor name="loginInteceptor2" class="com.jiafang.filter.LoginInterceptor" />
+			<interceptor name="loginInteceptor3" class="com.jiafang.filter.AdminInterceptor" />
+			<interceptor name="loginInteceptor4" class="com.jiafang.filter.CompanyInterceptor" />
+
 			<interceptor-stack name="loginInteceptor">
-			<interceptor-ref name="loginInteceptor2" />
+				<interceptor-ref name="loginInteceptor2" />
 				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+			<interceptor-stack name="adminLoginInteceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="loginInteceptor2" />
+				<interceptor-ref name="loginInteceptor3" />
+			</interceptor-stack>
+			<interceptor-stack name="companyLoginInteceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="loginInteceptor2" />
+				<interceptor-ref name="loginInteceptor4" />
 			</interceptor-stack>
 		</interceptors>
 	</package>

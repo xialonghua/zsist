@@ -21,8 +21,8 @@ public interface CategoryService extends Constants {
 	
 	BaseResp getItemByShipId(int shipId);
 	
-	public BaseResp getAdsProduct();
-    BaseResp getAdsProduct(Integer companyId);
+	public BaseResp getAdsProduct(int platform);
+    BaseResp getAdsProduct(Integer companyId, int platform);
 	
 	public BaseResp getAdsCompany();
 	

@@ -9,6 +9,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -42,6 +43,28 @@ public class CategoryDaoImpl implements CategoryDao{
         query.setMaxResults(page.getPageSize()).setFirstResult(page.getIndex());
         return query.list();
     }
+
+	@Override
+	public Long queryRelationshipCountByCatrgoryId(Integer categoryId) {
+
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+
+		query.setProjection(Projections.rowCount());
+
+		query.add(Restrictions.eq("categoryId", categoryId));
+		return (Long) query.uniqueResult();
+	}
+
+	@Override
+	public Long queryRelationshipCountByCatrgoryId(Integer categoryId, Integer companyId) {
+
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(CategoryRelationship.class);
+
+		query.setProjection(Projections.rowCount());
+
+		query.add(Restrictions.and(Restrictions.eq("categoryId", categoryId), Restrictions.eq("companyId", companyId)));
+		return (Long) query.uniqueResult();
+	}
 
     @Override
     public List<CategoryRelationship> queryRelationshipByCatrgoryId(Page page, Integer categoryId, Integer companyId) {

@@ -3,6 +3,7 @@ package com.jiafang.action.client;
 import com.jiafang.action.JSONAction;
 import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class CategoryAction extends JSONAction {
 	
 	@Action(value = "getCategories")
 	public String getCategories() {
-        if (company == null){
+        if (company == null && isPublic()){
             setData(categoryService.getCategories(page));
         }else {
             setData(categoryService.getCategories(page, company.getId()));
@@ -52,14 +53,12 @@ public class CategoryAction extends JSONAction {
 		setData(categoryService.getCategoriesByType(type,page));
 		return RETURN_JSON;
 	}
-	
+
 	@Action(value = "getCategoriesOfMark")
 	public String getCategoriesOfMarkByProductId() {
 		setData(categoryService.getCategoriesOfMark(type,productId));
 		return RETURN_JSON;
 	}
-	
-	
 	
 	@Action(value = "addCategory")
 	public String addCategory() {
@@ -91,32 +90,34 @@ public class CategoryAction extends JSONAction {
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addRelationship")
+	@Action(value = "addRelationship", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addRelationship() {
+		Company company = (Company) getSession().get("user_level_1_company");
+		ship.setCompanyId(company.getId());
 		setData(categoryService.addRelationship(ship));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "addAdvertisementRelationship")
+	@Action(value = "addAdvertisementRelationship", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String addAdvertisementRelationship() {
 		setData(categoryService.addAdvertisementRelationship(categoryId,productIds));
 		return RETURN_JSON;
 	}
 	
 	
-	@Action(value = "deleteRelationship")
+	@Action(value = "deleteRelationship", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteRelationship() {
 		setData(categoryService.deleteRelationship(ship));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "deleteRelationshipById")
+	@Action(value = "deleteRelationshipById", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String deleteRelationshipById() {
 		setData(categoryService.deleteRelationshipById(categoryId, productId));
 		return RETURN_JSON;
 	}
 	
-	@Action(value = "updateRelationshipWeight")
+	@Action(value = "updateRelationshipWeight", interceptorRefs={@InterceptorRef(COMPANY_INTERCEPTOR)})
 	public String updateRelationshipWeight() {
 		setData(categoryService.updateRelationshipWeight(ship));
 		return RETURN_JSON;
@@ -185,6 +186,12 @@ public class CategoryAction extends JSONAction {
 	public void setShipId(Integer shipId) {
 		this.shipId = shipId;
 	}
-	
-	
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 }
