@@ -50,8 +50,8 @@ public class OrderAction extends JSONAction {
 		Map<String, Object> session = getSession();
 
 		User user = (User) session.get("user");
-
-		if (company == null && isPublic()){
+		System.out.println("====>" + company + isPublic());
+		if (isPublic()){
 			setData(orderService.submitOrder(user.getId(), order, PUBLIC));
 		}else {
 			setData(orderService.submitOrder(user.getId(), order, PRIVATE));
@@ -89,7 +89,7 @@ public class OrderAction extends JSONAction {
 		}else {
 			orderStatus = order.getOrderState();
 		}
-        if (company == null && isPublic()){
+        if (isPublic()){
             setData(orderService.getOrders(user.getId(), orderStatus, page, PUBLIC));
         }else {
             setData(orderService.getOrders(user.getId(), orderStatus, company.getId(), page, PRIVATE));
@@ -109,7 +109,7 @@ public class OrderAction extends JSONAction {
 		}else {
 			orderStatus = order.getOrderState();
 		}
-		if (company == null && isPublic()){
+		if (isPublic()){
 			setData(orderService.getSellerOrders(user.getId(), orderStatus, page, PUBLIC));
 		}else {
 			setData(orderService.getSellerOrders(user.getId(), orderStatus, page, PRIVATE));
@@ -314,5 +314,10 @@ public class OrderAction extends JSONAction {
 
 	public void setCompany(Company company) {
 		this.company = company;
+	}
+
+	@Override
+	public boolean isPublic() {
+		return false;
 	}
 }

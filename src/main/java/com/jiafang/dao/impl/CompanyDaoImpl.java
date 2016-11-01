@@ -3,6 +3,7 @@ package com.jiafang.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jiafang.model.*;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -10,10 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.jiafang.dao.CompanyDao;
-import com.jiafang.model.Brand;
-import com.jiafang.model.Company;
-import com.jiafang.model.Pic;
-import com.jiafang.model.Product;
 import com.jiafang.service.Page;
 import com.jiafang.util.QiniuHelper;
 import com.qiniu.util.StringUtils;
@@ -61,6 +58,13 @@ public class CompanyDaoImpl implements CompanyDao{
 			company.setPics(query.list());
 		}
 		return companys;
+	}
+
+	@Override
+	public CompanyPayInfo queryCompanyPayInfoByType(Integer companyId, Integer type) {
+		Criteria query = sessionFactory.getCurrentSession().createCriteria(CompanyPayInfo.class);
+		query.add(Restrictions.eq("payType", type));
+		return (CompanyPayInfo) query.uniqueResult();
 	}
 
 	@Override

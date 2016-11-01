@@ -1,16 +1,23 @@
 package com.jiafang.action.client;
 
 import com.jiafang.action.JSONAction;
+import com.jiafang.action.resp.BaseResp;
 import com.jiafang.common.Constants;
 import com.jiafang.model.Company;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jiafang.service.CategoryService;
 import com.jiafang.service.Page;
 import com.jiafang.service.UserService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ParentPackage("basePackage")
 @Namespace("/ad")
@@ -26,7 +33,7 @@ public class AdAction extends JSONAction {
 
 	private String tel;
 	private Company company;
-	
+
 	@Action(value = "getAds")
 	public String getCategories() {
 		if(type == 0){
@@ -37,6 +44,21 @@ public class AdAction extends JSONAction {
 			}
 
 		}
+		return RETURN_JSON;
+	}
+
+	@Action(value = "getSplashAd")
+	public String getSplashAd() {
+		BaseResp resp = new BaseResp();
+		List<Map<String, Object>> dd = new ArrayList<>();
+		Map<String, Object> object = new HashMap();
+		object.put("pic", "抗日家纺活动2.jpg");
+		object.put("type", "0");
+		object.put("companyId", "234");
+		dd.add(object);
+		resp.setCode(Constants.SUCCESS);
+		resp.setData(dd);
+		setData(resp);
 		return RETURN_JSON;
 	}
 	
